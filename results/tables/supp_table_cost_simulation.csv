@@ -1,0 +1,5 @@
+,Strategy,Total_Cost,Cost_Per_Patient,PET_Scans,Plasma_Tests,Savings_vs_PET,Savings_vs_PET_%
+Universal_PET,Universal PET,30000000,3000,10000,0,0,0.0
+Plasma_Only,Plasma + PET for Gray Zone,18320000,1832,4440,10000,11680000,38.9
+Staged_Algorithm,Staged Algorithm (GRAD),8993000,899,1331,10000,21007000,70.0
+Staged_MRI,Staged + MRI (if MRI already available),7661000,766,887,10000,22339000,74.5

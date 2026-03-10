@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "GRAD: Gatekeeper-Reflex for Alzheimer's Diagnostics"
+type: software
+version: 1.0.0
+date-released: 2026-03-09
+url: "https://github.com/hsparankusham/GRAD-grayzone-classifier"
+license: MIT
+authors:
+  - family-names: Parankusham
+    given-names: Harthik
+  - family-names: Vanderlip
+    given-names: Casey
+  - family-names: Birkenbihl
+    given-names: Colin Jan
+  - family-names: Krishna
+    given-names: Eashwar
+  - family-names: Ugboaja
+    given-names: Chizobam
+  - family-names: Budson
+    given-names: Andrew
+  - family-names: Frank
+    given-names: Brandon
+keywords:
+  - Alzheimer's disease
+  - plasma biomarkers
+  - p-tau217
+  - amyloid PET
+  - machine learning
+  - diagnostic gray zone
+  - clinical decision support

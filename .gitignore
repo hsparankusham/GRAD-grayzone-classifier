@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Protected data (requires DUA — never commit)
+data/raw/
+data/processed/
+*.h5ad
+*.xlsx
+
+# Logs
+*.log
+
+# Jupyter
+.ipynb_checkpoints/

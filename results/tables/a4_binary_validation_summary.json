@@ -1,0 +1,73 @@
+{
+  "timestamp": "2026-02-26T02:13:24.819448",
+  "description": "A4 + LEARN binary external validation (centiloid >= 20 = amyloid+)",
+  "training": {
+    "cohort": "ADNI",
+    "n": 320,
+    "n_positive": 155,
+    "n_negative": 165
+  },
+  "external_validation": {
+    "cohort": "A4 + LEARN",
+    "n": 1644,
+    "n_positive": 1145,
+    "n_negative": 499,
+    "prevalence": 0.6965,
+    "auc": 0.8205,
+    "auc_95ci": [
+      0.7977,
+      0.8414
+    ],
+    "accuracy": 0.7293,
+    "sensitivity": 0.6996,
+    "specificity": 0.7976,
+    "ppv": 0.888,
+    "npv": 0.5364,
+    "brier": 0.1811,
+    "confusion_matrix": {
+      "TP": 801,
+      "TN": 398,
+      "FP": 101,
+      "FN": 344
+    }
+  },
+  "operating_points": {
+    "rule_out_90": {
+      "threshold": 0.31229628340884363,
+      "sensitivity": 0.9004366812227074,
+      "specificity": 0.45090180360721444
+    },
+    "rule_in_90": {
+      "threshold": 0.5959073705057284,
+      "sensitivity": 0.5231441048034935,
+      "specificity": 0.9038076152304609
+    }
+  },
+  "pipeline": {
+    "gatekeeper_thresholds": [
+      0.25,
+      0.75
+    ],
+    "gatekeeper_intercept": -0.8744,
+    "gatekeeper_coefficient": 1.0142,
+    "reflex_features": [
+      "pTau217_Z",
+      "tau_ab42_diff",
+      "GFAP_Z",
+      "AGE_Z",
+      "APOE4_carrier",
+      "gfap_tau_interaction"
+    ],
+    "reflex_importance": {
+      "pTau217_Z": 0.3158,
+      "tau_ab42_diff": 0.1604,
+      "GFAP_Z": 0.0805,
+      "AGE_Z": 0.1644,
+      "APOE4_carrier": 0.1146,
+      "gfap_tau_interaction": 0.1642
+    },
+    "n_gatekeeper_neg": 2,
+    "n_gatekeeper_pos": 349,
+    "n_reflex": 1293
+  }
+}

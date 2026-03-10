@@ -1,0 +1,37 @@
+variable,source,type,units,description,used_in
+PTID,ADNIMERGE,string,—,ADNI participant identifier,data loading
+RID,ADNIMERGE,integer,—,ADNI roster ID,data loading
+BID,A4 SUBJINFO,string,—,A4 Study participant identifier,data loading
+AGE,ADNIMERGE / SUBJINFO,float,years,Age at baseline visit,feature engineering (AGE_Z)
+PTGENDER,ADNIMERGE,string,—,"Sex (Male, Female)",demographics
+SEX,A4 SUBJINFO,integer,—,"Sex (1=Male, 2=Female)",demographics
+SEX_binary,engineered,integer,—,"Binary sex (1=Male, 0=Female)",demographics
+PTEDUCAT,ADNIMERGE / SUBJINFO,integer,years,Years of education,demographics
+DX,ADNIMERGE,string,—,"Current diagnosis (CN, MCI, Dementia)",subgroup analysis
+DX_bl,ADNIMERGE,string,—,Baseline diagnosis,subgroup analysis
+APOE4,ADNIMERGE,integer,—,"Number of APOE4 alleles (0, 1, or 2)",demographics
+APOE4_carrier,engineered / SUBJINFO,integer,—,"Binary APOE4 carrier status (0 or 1)",Reflex feature
+MMSE,ADNIMERGE / SUBJINFO,float,score,Mini-Mental State Examination score,demographics
+AV45,ADNIMERGE,float,SUVR,Amyloid PET florbetapir standardized uptake value ratio,amyloid classification
+AV45_bl,ADNIMERGE,float,SUVR,Baseline amyloid PET SUVR (fallback if current missing),amyloid classification
+AMYLCENT,A4 SUBJINFO,float,centiloid,Amyloid PET centiloid value,amyloid classification + Panel B
+amyloid_positive,engineered,integer,—,"Binary amyloid status (ADNI: AV45>1.11; A4: CL>=20)",target variable
+pTau217_raw,UPENN / Janssen / Lilly,float,pg/mL,Plasma phospho-tau217 concentration,harmonization input
+AB42_raw,UPENN / Roche,float,pg/mL,Plasma amyloid-beta 42 concentration,ratio calculation
+AB40_raw,UPENN / Roche,float,pg/mL,Plasma amyloid-beta 40 concentration,ratio calculation
+AB42_40_ratio,UPENN / Roche,float,ratio,Amyloid-beta 42/40 ratio,feature engineering (tau_ab42_diff)
+NfL_raw,UPENN / Roche,float,pg/mL,Plasma neurofilament light chain concentration,ablation analysis (excluded)
+GFAP_raw,UPENN / Roche,float,pg/mL,Plasma glial fibrillary acidic protein concentration,harmonization input
+assay,engineered,string,—,"Assay platform (UPENN, Janssen, or Lilly)",harmonization stratification
+pTau217_Z,harmonized,float,Z-score,Z-normalized log1p(pTau217) vs CN amyloid-negative reference,Gatekeeper + Reflex feature
+GFAP_Z,harmonized,float,Z-score,Z-normalized log1p(GFAP) vs CN amyloid-negative reference,Reflex feature
+NfL_Z,harmonized,float,Z-score,Z-normalized log1p(NfL) vs CN amyloid-negative reference,ablation analysis (excluded)
+tau_ab42_diff,engineered,float,log-difference,"log1p(pTau217_raw) - log1p(AB42_40_ratio)",Reflex feature
+gfap_tau_interaction,engineered,float,product,GFAP_Z * pTau217_Z interaction term,Reflex feature
+AGE_Z,engineered,float,Z-score,"(AGE - fold_mean) / fold_std, computed within LOOCV fold",Reflex feature
+Hippocampus,ADNIMERGE,float,mm3,Hippocampal volume from FreeSurfer,MRI enhancement analysis
+Entorhinal,ADNIMERGE,float,mm3,Entorhinal cortex volume from FreeSurfer,MRI enhancement analysis
+ICV,ADNIMERGE,float,mm3,Intracranial volume from FreeSurfer,MRI normalization
+Hippocampus_norm,engineered,float,normalized,"(Hippocampus / ICV) * 1000",MRI enhancement analysis
+Entorhinal_norm,engineered,float,normalized,"(Entorhinal / ICV) * 1000",MRI enhancement analysis
+TX,A4 SUBJINFO,string,—,Treatment arm (A4 treatment vs LEARN observational),demographics

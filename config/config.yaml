@@ -1,0 +1,76 @@
+# GRAD: Gatekeeper-Reflex for Alzheimer's Diagnostics
+# ====================================================
+# All hyperparameters, thresholds, and random seeds used in the manuscript.
+# Modify these values to test alternative configurations.
+
+# Reproducibility
+random_seed: 42
+
+# Data
+adni:
+  amyloid_threshold_suvr: 1.11        # AV45 SUVR cutoff for amyloid positivity
+  reference_population: "CN_amyloid_negative"  # Cognitively normal, amyloid-negative
+
+a4:
+  amyloid_threshold_centiloid: 20      # Centiloid cutoff for amyloid positivity
+
+# Harmonization (Z-score normalization)
+harmonization:
+  transform: "log1p"                   # Applied before Z-scoring
+  reference: "CN_amyloid_negative"     # Reference population for mean/std
+  per_fold: true                       # Recompute within each LOOCV fold
+
+# Stage 1: Gatekeeper (univariate logistic regression)
+gatekeeper:
+  model: "LogisticRegression"
+  penalty: "l2"
+  C: 1.0
+  solver: "lbfgs"
+  max_iter: 1000
+  feature: "pTau217_Z"                # Single input feature
+  threshold_negative: 0.25            # P(amyloid+) < 0.25 → Negative
+  threshold_positive: 0.75            # P(amyloid+) > 0.75 → Positive
+  # Gray zone: 0.25 <= P <= 0.75 → passed to Reflex (Stage 2)
+
+# Stage 2: Reflex (multi-marker random forest)
+reflex:
+  model: "RandomForestClassifier"
+  n_estimators: 100
+  max_depth: 5
+  min_samples_leaf: 5
+  class_weight: "balanced"
+  scaler: "StandardScaler"            # Fit on training gray zone, transform test
+  features:
+    - pTau217_Z                       # Harmonized plasma p-tau217
+    - tau_ab42_diff                    # log1p(pTau217) - log1p(AB42/40 ratio)
+    - GFAP_Z                          # Harmonized plasma GFAP
+    - AGE_Z                           # Z-normalized age (within fold)
+    - APOE4_carrier                   # Binary APOE4 carrier status
+    - gfap_tau_interaction            # GFAP_Z * pTau217_Z
+
+# Feature engineering
+features:
+  tau_ab42_diff: "log1p(pTau217_raw) - log1p(AB42_40_ratio)"
+  gfap_tau_interaction: "GFAP_Z * pTau217_Z"
+  AGE_Z: "(AGE - fold_mean) / fold_std"
+
+# Validation
+validation:
+  internal: "LOOCV"                   # Leave-one-out cross-validation (N=320)
+  external: "A4_LEARN"               # Independent cohort (N=1,644)
+  bootstrap_iterations: 2000         # For 95% confidence intervals
+  bootstrap_ci_method: "percentile"  # 2.5th and 97.5th percentiles
+
+# Clinical operating points
+operating_points:
+  rule_out_sensitivity: 0.90         # 90% sensitivity threshold
+  rule_in_specificity: 0.90          # 90% specificity threshold
+
+# Expected results (for verification of reproduction)
+expected_results:
+  adni_loocv_auc: 0.8527
+  a4_external_auc: 0.8205
+  gatekeeper_resolution_rate: 0.556
+  gatekeeper_accuracy: 0.8876
+  spearman_centiloid: 0.631
+  brier_score_a4: 0.181

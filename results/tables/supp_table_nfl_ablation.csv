@@ -1,0 +1,4 @@
+model,n_features,auc,accuracy,sensitivity,specificity,brier_score,n_reflex,gray_zone_auc,features,delta_auc
+Base (no NfL),6,0.8527077223851417,0.796875,0.7935483870967742,0.8,0.14994183516222637,142,0.7350649350649351,"pTau217_Z, tau_ab42_diff, GFAP_Z, AGE_Z, APOE4_carrier, gfap_tau_interaction",0.0
+Base + NfL_Z,7,0.8639296187683285,0.803125,0.8129032258064516,0.793939393939394,0.14723738801766917,142,0.7576423576423577,"pTau217_Z, tau_ab42_diff, GFAP_Z, AGE_Z, APOE4_carrier, gfap_tau_interaction, NfL_Z",0.011221896383186825
+Base + NfL_Z + nfl_age_interaction,8,0.8637341153470186,0.8,0.8129032258064516,0.7878787878787878,0.1481114891783649,142,0.7464535464535464,"pTau217_Z, tau_ab42_diff, GFAP_Z, AGE_Z, APOE4_carrier, gfap_tau_interaction, NfL_Z, nfl_age_interaction",0.011026392961876907

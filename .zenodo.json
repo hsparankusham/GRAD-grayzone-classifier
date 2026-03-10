@@ -1,0 +1,25 @@
+{
+    "title": "Code for: GRAD: A Two-Stage Machine Learning Algorithm Resolves the Plasma p-Tau217 Diagnostic Gray Zone for Amyloid PET Prediction",
+    "description": "Two-stage diagnostic algorithm (Gatekeeper-Reflex for Alzheimer's Diagnostics) that resolves diagnostic uncertainty in plasma p-tau217 testing by combining a univariate logistic regression screen with a multi-marker random forest classifier for gray zone cases.",
+    "creators": [
+        {"name": "Parankusham, Harthik", "affiliation": "Syntropi AI Group"},
+        {"name": "Vanderlip, Casey", "affiliation": "Syntropi AI Group"},
+        {"name": "Birkenbihl, Colin Jan", "affiliation": "Harvard Medical School / Massachusetts General Hospital"},
+        {"name": "Krishna, Eashwar", "affiliation": "Syntropi AI Group"},
+        {"name": "Ugboaja, Chizobam", "affiliation": "Syntropi AI Group"},
+        {"name": "Budson, Andrew", "affiliation": "VA Boston Healthcare System / Boston University"},
+        {"name": "Frank, Brandon", "affiliation": "Syntropi AI Group"}
+    ],
+    "upload_type": "software",
+    "access_right": "open",
+    "license": "MIT",
+    "keywords": [
+        "Alzheimer's disease",
+        "plasma biomarkers",
+        "p-tau217",
+        "amyloid PET",
+        "machine learning",
+        "clinical decision support",
+        "diagnostic gray zone"
+    ]
+}

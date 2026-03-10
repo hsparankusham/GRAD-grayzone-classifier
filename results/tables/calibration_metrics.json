@@ -1,0 +1,18 @@
+{
+  "hosmer_lemeshow": {
+    "chi2": 26.051268096278726,
+    "df": 8,
+    "p_value": 0.0010292913727807385
+  },
+  "calibration_in_the_large": {
+    "mean_predicted": 0.526768199484785,
+    "mean_observed": 0.484375,
+    "difference": 0.04239319948478504
+  },
+  "expected_calibration_error": 0.07824643834269743,
+  "ece_by_stage": {
+    "gatekeeper": 0.07749104798143186,
+    "reflex": 0.07446888459226923
+  },
+  "n_samples": 320
+}
