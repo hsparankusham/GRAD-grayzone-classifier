@@ -1,5 +1,8 @@
 # GRAD: Gatekeeper-Reflex for Alzheimer's Diagnostics
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18932865.svg)](https://doi.org/10.5281/zenodo.18932865)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 **A two-stage machine learning algorithm that resolves the plasma p-tau217 diagnostic gray zone for amyloid PET prediction.**
 
 > Parankusham H, Vanderlip C, Birkenbihl CJ, Krishna E, Ugboaja C, Budson A, Frank B.
