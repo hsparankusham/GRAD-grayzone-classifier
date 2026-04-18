@@ -71,7 +71,7 @@ class LOOCVValidator:
     # Locked 6-feature set for the Reflex model.
     # This ensures reproducibility and manuscript-code consistency.
     REFLEX_FEATURES = [
-        'pTau217_Z', 'tau_ab42_diff', 'GFAP_Z', 'AGE_Z',
+        'pTau217_Z', 'tau_ab42_diff', 'GFAP_Z', 'AGE',
         'APOE4_carrier', 'gfap_tau_interaction'
     ]
 

@@ -2,7 +2,7 @@ variable,source,type,units,description,used_in
 PTID,ADNIMERGE,string,—,ADNI participant identifier,data loading
 RID,ADNIMERGE,integer,—,ADNI roster ID,data loading
 BID,A4 SUBJINFO,string,—,A4 Study participant identifier,data loading
-AGE,ADNIMERGE / SUBJINFO,float,years,Age at baseline visit,feature engineering (AGE_Z)
+AGE,ADNIMERGE / SUBJINFO,float,years,Age at baseline visit,Reflex feature (raw)
 PTGENDER,ADNIMERGE,string,—,"Sex (Male, Female)",demographics
 SEX,A4 SUBJINFO,integer,—,"Sex (1=Male, 2=Female)",demographics
 SEX_binary,engineered,integer,—,"Binary sex (1=Male, 0=Female)",demographics
@@ -28,7 +28,7 @@ GFAP_Z,harmonized,float,Z-score,Z-normalized log1p(GFAP) vs CN amyloid-negative 
 NfL_Z,harmonized,float,Z-score,Z-normalized log1p(NfL) vs CN amyloid-negative reference,ablation analysis (excluded)
 tau_ab42_diff,engineered,float,log-difference,"log1p(pTau217_raw) - log1p(AB42_40_ratio)",Reflex feature
 gfap_tau_interaction,engineered,float,product,GFAP_Z * pTau217_Z interaction term,Reflex feature
-AGE_Z,engineered,float,Z-score,"(AGE - fold_mean) / fold_std, computed within LOOCV fold",Reflex feature
+AGE_Z,engineered (deprecated),float,Z-score,"Previously used; replaced by raw AGE",not used in final model
 Hippocampus,ADNIMERGE,float,mm3,Hippocampal volume from FreeSurfer,MRI enhancement analysis
 Entorhinal,ADNIMERGE,float,mm3,Entorhinal cortex volume from FreeSurfer,MRI enhancement analysis
 ICV,ADNIMERGE,float,mm3,Intracranial volume from FreeSurfer,MRI normalization

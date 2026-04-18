@@ -12,7 +12,7 @@ Locked features:
   1. pTau217_Z
   2. tau_ab42_diff
   3. GFAP_Z
-  4. AGE_Z
+  4. AGE
   5. APOE4_carrier
   6. gfap_tau_interaction
 
@@ -45,7 +45,7 @@ RESULTS = Path(__file__).parent / 'results'
 
 # The locked 6-feature set
 LOCKED_FEATURES = [
-    'pTau217_Z', 'tau_ab42_diff', 'GFAP_Z', 'AGE_Z',
+    'pTau217_Z', 'tau_ab42_diff', 'GFAP_Z', 'AGE',
     'APOE4_carrier', 'gfap_tau_interaction'
 ]
 

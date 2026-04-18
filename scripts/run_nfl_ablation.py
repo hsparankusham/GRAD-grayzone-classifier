@@ -5,7 +5,7 @@ NfL Ablation Analysis for GRAD Pipeline
 Tests the incremental value of NfL-based features in the Reflex model
 by running LOOCV with three feature configurations:
 
-1. Base model (no NfL): pTau217_Z, tau_ab42_diff, GFAP_Z, AGE_Z, APOE4_carrier, gfap_tau_interaction
+1. Base model (no NfL): pTau217_Z, tau_ab42_diff, GFAP_Z, AGE, APOE4_carrier, gfap_tau_interaction
 2. +NfL_Z: Base + NfL_Z
 3. +NfL_Z + nfl_age_interaction: Base + NfL_Z + nfl_age_interaction
 
@@ -138,7 +138,7 @@ def main():
 
     # Define three feature configurations
     base_features = [
-        'pTau217_Z', 'tau_ab42_diff', 'GFAP_Z', 'AGE_Z',
+        'pTau217_Z', 'tau_ab42_diff', 'GFAP_Z', 'AGE',
         'APOE4_carrier', 'gfap_tau_interaction'
     ]
 

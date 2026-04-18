@@ -72,7 +72,7 @@ def main():
     draw_arrow(ax, 2.5, 4.55, 2.5, 3.95)
 
     # Reflex outputs
-    draw_box(ax, 1.2, 3.55, 'Classified\nNegative/Positive\nn=111 (68.3% acc)',
+    draw_box(ax, 1.2, 3.55, 'Classified\nNegative/Positive\nn=109 (70.4% acc)',
              width=2.0, height=0.65, color='#E1F5FE', edgecolor='#0277BD')
     draw_box(ax, 3.8, 3.55, 'Indeterminate\n(0.40–0.60)\nRefer to PET\n~10%',
              width=2.0, height=0.65, color='#F3E5F5', edgecolor='#7B1FA2')
@@ -80,7 +80,7 @@ def main():
     draw_arrow(ax, 3.2, 3.95, 3.8, 3.9)
 
     # Overall ADNI result
-    draw_box(ax, 2.5, 2.4, 'Overall ADNI Pipeline\nAUC 0.853 (95% CI: 0.808–0.894)\nAccuracy 79.7%',
+    draw_box(ax, 2.5, 2.4, 'Overall ADNI Pipeline\nAUC 0.857 (95% CI: 0.813–0.897)\nAccuracy 80.6%',
              width=3.2, height=0.65, color='#BBDEFB', edgecolor='#1565C0', fontsize=9)
 
     draw_arrow(ax, 2.5, 3.2, 2.5, 2.75)
@@ -117,7 +117,7 @@ def main():
              width=2.8, height=0.65, color='#FFF3E0', edgecolor='#E65100')
 
     # Overall A4 result
-    draw_box(ax, 7.5, 2.4, 'Overall A4 Pipeline\nAUC 0.821 (95% CI: 0.798–0.841)\nCentiloid r=0.631',
+    draw_box(ax, 7.5, 2.4, 'Overall A4 Pipeline\nAUC 0.828 (95% CI: 0.806–0.849)\nCentiloid r=0.642',
              width=3.2, height=0.65, color='#FFCDD2', edgecolor='#C62828', fontsize=9)
 
     draw_arrow(ax, 7.5, 3.2, 7.5, 2.75)

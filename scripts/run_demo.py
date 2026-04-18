@@ -62,8 +62,7 @@ def main():
     # Feature engineering
     df['tau_ab42_diff'] = np.log1p(df['pTau217_raw']) - np.log1p(df['AB42_40_ratio'])
     df['gfap_tau_interaction'] = df['GFAP_Z'] * df['pTau217_Z']
-    age_mu, age_std = df['AGE'].mean(), df['AGE'].std()
-    df['AGE_Z'] = (df['AGE'] - age_mu) / age_std
+    # AGE is passed through directly (RF is scale-invariant)
 
     # ── LOOCV ─────────────────────────────────────────────────────────
     print("\n--- Running Leave-One-Out Cross-Validation ---")
@@ -72,7 +71,7 @@ def main():
     predictions = np.zeros(N)
     stages = []
 
-    FEATURES = ['pTau217_Z', 'tau_ab42_diff', 'GFAP_Z', 'AGE_Z',
+    FEATURES = ['pTau217_Z', 'tau_ab42_diff', 'GFAP_Z', 'AGE',
                 'APOE4_carrier', 'gfap_tau_interaction']
 
     for i in range(N):
@@ -101,9 +100,7 @@ def main():
         test['tau_ab42_diff'] = np.log1p(test['pTau217_raw']) - np.log1p(test['AB42_40_ratio'])
         train['gfap_tau_interaction'] = train['GFAP_Z'] * train['pTau217_Z']
         test['gfap_tau_interaction'] = test['GFAP_Z'] * test['pTau217_Z']
-        am, astd = train['AGE'].mean(), train['AGE'].std()
-        train['AGE_Z'] = (train['AGE'] - am) / astd
-        test['AGE_Z'] = (test['AGE'] - am) / astd
+        # AGE passed through directly (no standardization needed for RF)
 
         # Stage 1: Gatekeeper
         gk = LogisticRegression(penalty='l2', C=1.0, solver='lbfgs',

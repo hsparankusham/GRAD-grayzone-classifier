@@ -11,10 +11,10 @@ Features:
     - NfL_Z: Harmonized neurofilament light
     - GFAP_Z: Harmonized glial fibrillary acidic protein
     - AB42_40_ratio_Z: Harmonized amyloid beta ratio (if available)
-    - AGE_Z: Standardized age
+    - AGE: Raw age in years
     - APOE4_carrier: APOE epsilon 4 carrier status
     - tau_ab42_diff: log(pTau217) - log(AB42/40) ratio
-    - nfl_age_interaction: NfL_Z * AGE_Z
+    - gfap_tau_interaction: GFAP_Z * pTau217_Z
 """
 
 import numpy as np
@@ -115,9 +115,8 @@ class ReflexModel:
         if 'GFAP_Z' in df.columns and 'pTau217_Z' in df.columns:
             result['gfap_tau_interaction'] = df['GFAP_Z'] * df['pTau217_Z']
 
-        # 4. Standardized age
-        if 'AGE' in df.columns:
-            result['AGE_Z'] = (df['AGE'] - df['AGE'].mean()) / df['AGE'].std()
+        # 4. Raw age is passed through directly (RF is scale-invariant)
+        # AGE column already exists in df, no engineering needed.
 
         # 5. pTau217/NfL ratio (tau pathology vs general neurodegeneration)
         if 'pTau217_raw' in df.columns and 'NfL_raw' in df.columns:
@@ -161,7 +160,7 @@ class ReflexModel:
             'tau_ab42_diff',       # Key divergence feature
             'GFAP_Z',              # Astrogliosis
             'NfL_Z',               # Neurodegeneration
-            'AGE_Z',               # Age
+            'AGE',                 # Raw age in years
             'APOE4_carrier',       # Genetic risk
             'nfl_age_interaction', # Interaction term
             'gfap_tau_interaction',# Interaction term

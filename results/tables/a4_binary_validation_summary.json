@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-02-26T02:13:24.819448",
+  "timestamp": "2026-03-25T16:40:22.413546",
   "description": "A4 + LEARN binary external validation (centiloid >= 20 = amyloid+)",
   "training": {
     "cohort": "ADNI",
@@ -13,34 +13,34 @@
     "n_positive": 1145,
     "n_negative": 499,
     "prevalence": 0.6965,
-    "auc": 0.8205,
+    "auc": 0.8282,
     "auc_95ci": [
-      0.7977,
-      0.8414
+      0.8063,
+      0.8485
     ],
-    "accuracy": 0.7293,
-    "sensitivity": 0.6996,
-    "specificity": 0.7976,
-    "ppv": 0.888,
-    "npv": 0.5364,
-    "brier": 0.1811,
+    "accuracy": 0.7494,
+    "sensitivity": 0.7354,
+    "specificity": 0.7816,
+    "ppv": 0.8854,
+    "npv": 0.5628,
+    "brier": 0.1745,
     "confusion_matrix": {
-      "TP": 801,
-      "TN": 398,
-      "FP": 101,
-      "FN": 344
+      "TP": 842,
+      "TN": 390,
+      "FP": 109,
+      "FN": 303
     }
   },
   "operating_points": {
     "rule_out_90": {
-      "threshold": 0.31229628340884363,
+      "threshold": 0.3407973911414643,
       "sensitivity": 0.9004366812227074,
-      "specificity": 0.45090180360721444
+      "specificity": 0.4889779559118237
     },
     "rule_in_90": {
-      "threshold": 0.5959073705057284,
-      "sensitivity": 0.5231441048034935,
-      "specificity": 0.9038076152304609
+      "threshold": 0.6114324597353754,
+      "sensitivity": 0.5056768558951965,
+      "specificity": 0.9018036072144289
     }
   },
   "pipeline": {
@@ -54,7 +54,7 @@
       "pTau217_Z",
       "tau_ab42_diff",
       "GFAP_Z",
-      "AGE_Z",
+      "AGE",
       "APOE4_carrier",
       "gfap_tau_interaction"
     ],
@@ -62,7 +62,7 @@
       "pTau217_Z": 0.3158,
       "tau_ab42_diff": 0.1604,
       "GFAP_Z": 0.0805,
-      "AGE_Z": 0.1644,
+      "AGE": 0.1644,
       "APOE4_carrier": 0.1146,
       "gfap_tau_interaction": 0.1642
     },

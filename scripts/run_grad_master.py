@@ -69,7 +69,7 @@ REFLEX_FEATURES = [
     'pTau217_Z',               # Primary biomarker (harmonized p-tau217)
     'tau_ab42_diff',           # Tau-amyloid divergence: log(pTau217) - log(AB42/40)
     'GFAP_Z',                 # Astrogliosis marker (harmonized GFAP)
-    'AGE_Z',                  # Standardized age (within-fold mean/std)
+    'AGE',                    # Raw age in years (no standardization needed for RF)
     'APOE4_carrier',          # Binary APOE epsilon-4 carrier status
     'gfap_tau_interaction',   # Inflammation x pathology: GFAP_Z * pTau217_Z
 ]
@@ -300,7 +300,7 @@ def apply_harmonizer(df, params):
 # LEAKAGE NOTE:
 #   - tau_ab42_diff: pure algebra on raw values, no population parameters
 #   - gfap_tau_interaction: product of already-harmonized Z-scores
-#   - AGE_Z: uses mean/std from whatever df is passed in (training fold in LOOCV)
+#   - AGE: uses mean/std from whatever df is passed in (training fold in LOOCV)
 
 def engineer_features(df):
     """
@@ -330,14 +330,12 @@ def engineer_features(df):
     if 'GFAP_Z' in df.columns and 'pTau217_Z' in df.columns:
         result['gfap_tau_interaction'] = df['GFAP_Z'] * df['pTau217_Z']
 
-    # Feature 3: AGE_Z — Standardized age
-    # BIOLOGICAL RATIONALE: Age is the #1 risk factor for AD. Standardizing
-    # to Z-scores puts it on the same scale as biomarkers.
-    # LEAKAGE NOTE: mean/std computed from df, which is the training gray zone
-    # in LOOCV. For a single test subject, std=NaN → AGE_Z=NaN, which the RF
-    # handles as a missing value (routed to both children probabilistically).
-    if 'AGE' in df.columns:
-        result['AGE_Z'] = (df['AGE'] - df['AGE'].mean()) / df['AGE'].std()
+    # Feature 3: AGE — Raw age in years
+    # BIOLOGICAL RATIONALE: Age is the #1 risk factor for AD.
+    # No standardization needed: Random Forest splits are rank-based and
+    # invariant to monotonic transformations. Using raw age avoids the
+    # cross-cohort distortion that within-cohort z-scoring introduces.
+    # AGE column is passed through directly from df.
 
     return result
 
@@ -501,7 +499,7 @@ def prepare_reflex_features(df, feature_names=REFLEX_FEATURES):
 #
 # CRITICAL: Every preprocessing step is re-computed within each fold:
 #   - Fresh AssayHarmonizer (new mu/sigma from 319 training subjects)
-#   - Fresh feature engineering (new AGE_Z mean/std from training fold)
+#   - Fresh feature engineering (new AGE mean/std from training fold)
 #   - Fresh Gatekeeper (new logistic regression coefficients)
 #   - Fresh Reflex (new RF weights, new StandardScaler)
 #
@@ -581,13 +579,13 @@ def run_adni_loocv(adni_df):
             if train_gray_mask.sum() >= 10:
                 # Enough gray zone training subjects to fit Reflex
                 # IMPORTANT: engineer features on gray zone subset only
-                # (AGE_Z mean/std comes from gray zone training, not all 319)
+                # (AGE mean/std comes from gray zone training, not all 319)
                 gray_train_h = train_h.iloc[np.where(train_gray_mask)[0]]
                 gray_train = engineer_features(gray_train_h)
                 gray_train_y = train_y[train_gray_mask]
 
                 # Engineer features for test subject separately
-                # (single-row AGE_Z = NaN, which RF handles as missing)
+                # (single-row AGE = NaN, which RF handles as missing)
                 test_eng = engineer_features(test_h)
 
                 # Prepare features
@@ -697,7 +695,7 @@ def run_a4_validation(adni_df, a4_df):
     adni_gray_mask = adni_gk_class == 'gray_zone'
 
     # Engineer features on gray zone subset ONLY
-    # AGE_Z uses gray zone mean/std, matching run_a4_binary_validation.py
+    # AGE uses gray zone mean/std, matching run_a4_binary_validation.py
     gray_train_h = adni_h[adni_gray_mask]
     gray_train = engineer_features(gray_train_h)
     gray_train_y = adni_y[adni_gray_mask]
@@ -729,7 +727,7 @@ def run_a4_validation(adni_df, a4_df):
     gray_mask = a4_gk_class == 'gray_zone'
     if gray_mask.sum() > 0:
         # Engineer features on A4 gray zone ONLY
-        # AGE_Z uses A4 gray zone mean/std (same approach as authoritative script)
+        # AGE uses A4 gray zone mean/std (same approach as authoritative script)
         a4_gray_h = a4_h[gray_mask]
         a4_gray = engineer_features(a4_gray_h)
         X_a4_gray = prepare_reflex_features(a4_gray)

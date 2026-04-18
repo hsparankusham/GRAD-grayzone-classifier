@@ -44,7 +44,7 @@ reflex:
     - pTau217_Z                       # Harmonized plasma p-tau217
     - tau_ab42_diff                    # log1p(pTau217) - log1p(AB42/40 ratio)
     - GFAP_Z                          # Harmonized plasma GFAP
-    - AGE_Z                           # Z-normalized age (within fold)
+    - AGE                              # Raw age in years (RF is scale-invariant)
     - APOE4_carrier                   # Binary APOE4 carrier status
     - gfap_tau_interaction            # GFAP_Z * pTau217_Z
 
@@ -52,7 +52,7 @@ reflex:
 features:
   tau_ab42_diff: "log1p(pTau217_raw) - log1p(AB42_40_ratio)"
   gfap_tau_interaction: "GFAP_Z * pTau217_Z"
-  AGE_Z: "(AGE - fold_mean) / fold_std"
+  AGE: "Raw age in years (passed through directly)"
 
 # Validation
 validation:
@@ -68,9 +68,9 @@ operating_points:
 
 # Expected results (for verification of reproduction)
 expected_results:
-  adni_loocv_auc: 0.8527
-  a4_external_auc: 0.8205
+  adni_loocv_auc: 0.8566
+  a4_external_auc: 0.8282
   gatekeeper_resolution_rate: 0.556
   gatekeeper_accuracy: 0.8876
-  spearman_centiloid: 0.631
-  brier_score_a4: 0.181
+  spearman_centiloid: 0.642
+  brier_score_a4: 0.174

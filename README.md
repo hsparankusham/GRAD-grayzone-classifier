@@ -22,10 +22,10 @@ Plasma phospho-tau 217 (p-tau217) is a leading blood-based biomarker for Alzheim
 
 | Metric | ADNI (Internal, LOOCV) | A4 + LEARN (External) |
 |--------|:----------------------:|:---------------------:|
-| **AUC** | 0.853 (95% CI: 0.808-0.894) | 0.821 (95% CI: 0.798-0.841) |
-| **Accuracy** | 79.7% | 72.9% |
-| **Sensitivity** | 79.4% | 70.0% |
-| **Specificity** | 80.0% | 79.8% |
+| **AUC** | 0.857 (95% CI: 0.813-0.897) | 0.828 (95% CI: 0.806-0.849) |
+| **Accuracy** | 80.6% | 74.9% |
+| **Sensitivity** | 78.7% | 73.5% |
+| **Specificity** | 82.4% | 78.2% |
 | **Gatekeeper resolved** | 55.6% @ 88.8% accuracy | 21.4% |
 
 ---
@@ -189,12 +189,12 @@ After full reproduction, verify against these values (also in `config/config.yam
 
 | Metric | Expected Value |
 |--------|:--------------:|
-| ADNI LOOCV AUC | 0.8527 |
-| A4 External AUC | 0.8205 |
+| ADNI LOOCV AUC | 0.8566 |
+| A4 External AUC | 0.8282 |
 | Gatekeeper resolution rate | 55.6% |
 | Gatekeeper accuracy | 88.8% |
-| Spearman r (centiloid) | 0.631 |
-| Brier score (A4) | 0.181 |
+| Spearman r (centiloid) | 0.642 |
+| Brier score (A4) | 0.174 |
 
 ---
 

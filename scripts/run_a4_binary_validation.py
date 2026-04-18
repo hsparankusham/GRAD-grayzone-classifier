@@ -256,8 +256,8 @@ def engineer_features(df):
     if 'GFAP_Z' in df.columns and 'pTau217_Z' in df.columns:
         result['gfap_tau_interaction'] = df['GFAP_Z'] * df['pTau217_Z']
 
-    if 'AGE' in df.columns:
-        result['AGE_Z'] = (df['AGE'] - df['AGE'].mean()) / (df['AGE'].std() if df['AGE'].std() > 0 else 1.0)
+    # AGE: raw age in years, passed through directly.
+    # Random Forest is scale-invariant; no standardization needed.
 
     return result
 
@@ -316,7 +316,7 @@ def main():
     gray_eng = engineer_features(gray_df)
 
     # Select features (same as original model, minus NfL features)
-    feature_priority = ['pTau217_Z', 'tau_ab42_diff', 'GFAP_Z', 'AGE_Z', 'APOE4_carrier', 'gfap_tau_interaction']
+    feature_priority = ['pTau217_Z', 'tau_ab42_diff', 'GFAP_Z', 'AGE', 'APOE4_carrier', 'gfap_tau_interaction']
     features_used = [f for f in feature_priority if f in gray_eng.columns and gray_eng[f].notna().sum() > len(gray_eng) * 0.5]
 
     print(f"  Features: {features_used}")
