@@ -32,21 +32,34 @@ warnings.filterwarnings('ignore')
 # ============================================================
 # PATHS
 # ============================================================
+from _grad_paths import RESULTS, ADNI_DIR, A4_DIR, DATA_DIR, PROJECT_ROOT  # noqa: F401
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(BASE_DIR)))),
-    'syntropi-ai-data'
-)
-ADNI_DIR = os.path.join(DATA_DIR, 'syntropi-ai-ADNI')
-A4_DIR = os.path.join(DATA_DIR, 'syntropi-ai-A4')
-RESULTS_DIR = os.path.join(BASE_DIR, 'results')
-os.makedirs(RESULTS_DIR, exist_ok=True)
+ADNI_DIR = str(ADNI_DIR)
+A4_DIR = str(A4_DIR)
+RESULTS_DIR = RESULTS
 
 # Thresholds
 AV45_THRESHOLD = 1.11
 CL_THRESHOLD = 20
 GK_LOW = 0.25
 GK_HIGH = 0.75
+
+# Harmonisation reference (Methods 2.3).
+# Z-score parameters are derived independently WITHIN each cohort, from that
+# cohort's own cognitively unimpaired, amyloid-negative participants. This is an
+# assay calibration, not a fitted model parameter: ADNI uses the Lumipulse assay
+# (pg/mL) and A4 the Lilly MSD assay (U/mL), so a single mu/sigma cannot serve
+# both. Applying ADNI's reference to A4 shifts the whole cohort upward and
+# leaves only 2 of 499 amyloid-negative participants below the rule-out
+# threshold. The model itself -- Gatekeeper coefficients, Reflex forest and the
+# 0.25/0.75 thresholds -- is fitted on ADNI alone and never sees A4.
+LOCAL_REFERENCE = True
+
+# Map Stage-2 output onto the routing band before pooling into one reported
+# probability. Off for the published analysis; see
+# results/tables/supp_table_stage_scoring_diagnostic.csv
+RECONCILE_SCALES = False
 
 
 # ============================================================
@@ -234,10 +247,34 @@ def harmonize(train_df, test_df, biomarkers=None):
 
             train_out.loc[mask, z_col] = (np.log1p(train_df.loc[mask, bm]) - a_mean) / a_std
 
-        # Apply to test (use overall reference since assay differs)
+        # Apply to test.
+        # LOCAL_REFERENCE=True implements Methods 2.3 as written: the reference
+        # population is CU, amyloid-negative individuals WITHIN EACH COHORT. Each
+        # assay therefore supplies its own mu/sigma, which is what makes Z = 0 mean
+        # "typical healthy amyloid-negative person on this platform" and lets one
+        # probability threshold transfer across assays.
+        # False reproduces the published behaviour, which scored A4 (Lilly MSD,
+        # U/mL) against ADNI's Lumipulse reference. Because Lilly values run higher
+        # and are less dispersed, that shifted the whole A4 cohort up and compressed
+        # it, leaving only 2 of 499 amyloid-negative participants below the 0.25
+        # rule-out threshold.
         for assay in test_df['assay'].unique():
             mask = test_df['assay'] == assay
-            test_out.loc[mask, z_col] = (np.log1p(test_df.loc[mask, bm]) - ref_mean) / ref_std
+            if LOCAL_REFERENCE:
+                # this cohort's own reference subset: cognitively unimpaired and
+                # amyloid-negative (all A4 participants are CU by design)
+                t_ref = mask & (test_df['amyloid_positive'] == 0)
+                vals = np.log1p(test_df.loc[t_ref, bm].dropna())
+                if len(vals) >= 5:
+                    t_mean = vals.mean()
+                    t_std = vals.std() if vals.std() > 0 else 1.0
+                else:
+                    # too few local references for this biomarker: fall back to
+                    # the training-cohort parameters rather than guess
+                    t_mean, t_std = ref_mean, ref_std
+            else:
+                t_mean, t_std = ref_mean, ref_std
+            test_out.loc[mask, z_col] = (np.log1p(test_df.loc[mask, bm]) - t_mean) / t_std
 
     return train_out, test_out
 
@@ -278,6 +315,7 @@ def main():
     adni_df = load_adni()
     print()
     a4_df = load_a4()
+
     print()
 
     adni_y = adni_df['amyloid_positive'].astype(int)
@@ -286,6 +324,7 @@ def main():
     # STEP 2: Harmonize
     print("STEP 2: Harmonizing biomarkers...")
     adni_h, a4_h = harmonize(adni_df, a4_df)
+
     print(f"  ADNI pTau217_Z: mean={adni_h['pTau217_Z'].mean():.3f}, std={adni_h['pTau217_Z'].std():.3f}")
     print(f"  A4 pTau217_Z: mean={a4_h['pTau217_Z'].mean():.3f}, std={a4_h['pTau217_Z'].std():.3f}\n")
 
@@ -352,13 +391,16 @@ def main():
     a4_stages = np.full(len(a4_df), '', dtype=object)
 
     a4_gk_probs = gatekeeper.predict_proba(X_a4_gk[valid_a4])[:, 1]
-
     # Classify by gatekeeper
     neg_mask_gk = a4_gk_probs < GK_LOW
     pos_mask_gk = a4_gk_probs > GK_HIGH
     gray_mask_gk = ~neg_mask_gk & ~pos_mask_gk
 
     valid_indices = np.where(valid_a4)[0]
+    # retain the Stage-1 probability for every participant (Figure 1B plots
+    # routing, which is a Gatekeeper property, not the pooled 2-stage output)
+    a4_gk_full = np.full(len(a4_h), np.nan)
+    a4_gk_full[valid_indices] = a4_gk_probs
     a4_probs[valid_indices[neg_mask_gk]] = a4_gk_probs[neg_mask_gk]
     a4_stages[valid_indices[neg_mask_gk]] = 'gatekeeper_neg'
 
@@ -383,6 +425,11 @@ def main():
 
         X_a4_reflex_scaled = scaler.transform(X_a4_reflex)
         reflex_probs = rf.predict_proba(X_a4_reflex_scaled)[:, 1]
+        # Put Stage-2 output on the same scale as Stage 1 before pooling into a
+        # single reported probability (see src/validation.reconcile_stage_scale).
+        # Fixed affine map, so within-gray-zone ordering is unchanged.
+        if RECONCILE_SCALES:
+            reflex_probs = GK_LOW + reflex_probs * (GK_HIGH - GK_LOW)
 
         a4_probs[valid_indices[gray_mask_gk]] = reflex_probs
         a4_stages[valid_indices[gray_mask_gk]] = 'reflex'
@@ -524,11 +571,12 @@ def main():
     preds_df = pd.DataFrame({
         'true_amyloid': y_true,
         'predicted_prob': a4_probs,
+        'gatekeeper_prob': a4_gk_full,
         'predicted_class': (a4_probs >= 0.5).astype(int) if not np.all(np.isnan(a4_probs)) else np.nan,
         'stage': a4_stages,
         'centiloid': a4_df['AMYLCENT'].values,
     })
-    preds_path = os.path.join(RESULTS_DIR, 'a4_binary_validation_predictions.csv')
+    preds_path = str(RESULTS / 'a4_binary_validation_predictions.csv')
     preds_df.to_csv(preds_path, index=False)
     print(f"  Predictions: {preds_path}")
 
@@ -572,7 +620,7 @@ def main():
         }
     }
 
-    summary_path = os.path.join(RESULTS_DIR, 'a4_binary_validation_summary.json')
+    summary_path = str(RESULTS / 'a4_binary_validation_summary.json')
     with open(summary_path, 'w') as f:
         json.dump(summary, f, indent=2)
     print(f"  Summary: {summary_path}")

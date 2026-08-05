@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from pathlib import Path
 
-RESULTS = Path(__file__).parent / 'results'
+from _grad_paths import RESULTS
 
 
 def draw_box(ax, x, y, text, width=2.4, height=0.55, color='#E3F2FD',

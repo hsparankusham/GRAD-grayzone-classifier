@@ -19,7 +19,7 @@ from pathlib import Path
 from scipy import stats as sp_stats
 from sklearn.calibration import calibration_curve
 
-RESULTS = Path(__file__).parent / 'results'
+from _grad_paths import RESULTS
 
 
 def hosmer_lemeshow(y_true, y_prob, n_bins=10):

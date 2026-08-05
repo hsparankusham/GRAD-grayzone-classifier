@@ -20,13 +20,13 @@ import pandas as pd
 from sklearn.metrics import roc_auc_score, brier_score_loss
 from pathlib import Path
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _grad_paths import (RESULTS, ADNI_DIR, A4_DIR, DATA_DIR, PROJECT_ROOT, SYNTHETIC)  # noqa: F401
 from data_loader import ADNIDataLoader
 from harmonizer import AssayHarmonizer
 from gatekeeper import GatekeeperModel
 from reflex import ReflexModel
 
-RESULTS = Path(__file__).parent / 'results'
+from _grad_paths import RESULTS
 
 
 def run_loocv_with_features(df, target_col, feature_set, gk_low=0.25, gk_high=0.75):
@@ -122,11 +122,7 @@ def main():
 
     # Load ADNI data
     # Path: grayzone-classifier -> projects -> syntropi-ai-research -> Syntropi AI Group -> AlzheimersDisease_Research_Personal
-    adni_path = os.path.join(
-        os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(
-            os.path.dirname(os.path.abspath(__file__)))))),
-        'syntropi-ai-data', 'syntropi-ai-ADNI'
-    )
+    adni_path = str(ADNI_DIR)
 
     loader = ADNIDataLoader(adni_path)
     df = loader.merge_data(use_baseline_only=True)

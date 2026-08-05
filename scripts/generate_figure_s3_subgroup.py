@@ -1,3 +1,4 @@
+from _grad_paths import load_threshold_sweep
 #!/usr/bin/env python3
 """
 Generate Publication-Grade Figure S3: Subgroup & Threshold Analysis
@@ -45,14 +46,14 @@ COL_PURPLE = '#7B1FA2'
 COL_NEUTRAL = '#616161'
 COL_LIGHT = '#BDBDBD'
 
-RESULTS_DIR = Path(__file__).parent / 'results'
+RESULTS_DIR = Path(__file__).parent.parent / 'results'
 
 
 def main():
     # ── Load data ──────────────────────────────────────────────────────
     df = pd.read_csv(RESULTS_DIR / 'adni_loocv_predictions.csv')
-    subgroup = pd.read_csv(RESULTS_DIR / 'supp_table_subgroup_performance.csv')
-    threshold = pd.read_csv(RESULTS_DIR / 'supp_table_threshold_sensitivity.csv')
+    subgroup = pd.read_csv(RESULTS_DIR / 'tables' / 'supp_table_subgroup_performance.csv')
+    threshold = load_threshold_sweep()
 
     y_true = df['true_amyloid'].values.astype(int)
     y_prob = df['predicted_prob'].values
@@ -69,7 +70,7 @@ def main():
     })
 
     fig = plt.figure(figsize=(FIG_WIDTH, FIG_HEIGHT))
-    gs = fig.add_gridspec(2, 2, hspace=0.45, wspace=0.38,
+    gs = fig.add_gridspec(2, 2, hspace=0.55, wspace=0.38,
                           left=0.10, right=0.96, bottom=0.06, top=0.95)
 
     ax_a = fig.add_subplot(gs[0, 0])
@@ -180,7 +181,9 @@ def main():
         Line2D([0], [0], marker='D', color='w', markerfacecolor=COL_PURPLE,
                markersize=6, label='Age'),
     ]
-    ax_a.legend(handles=legend_elements, loc='lower left', fontsize=LEGEND_SIZE,
+    ax_a.legend(handles=legend_elements, loc='upper center',
+                bbox_to_anchor=(0.5, -0.12), ncol=2,
+                fontsize=LEGEND_SIZE,
                 frameon=True, framealpha=0.9, edgecolor='#cccccc',
                 handletextpad=0.3)
 
@@ -226,20 +229,16 @@ def main():
     # Mark 90% sensitivity threshold
     ax_b.axvline(0.245, color=COL_RED, linewidth=0.7, linestyle=':',
                  zorder=1, alpha=0.5)
-    ax_b.text(0.20, 0.40, '90% Sens\np = 0.245',
-              fontsize=ANNO_SIZE - 1.5, color=COL_RED, ha='center',
-              va='center', style='italic',
-              bbox=dict(boxstyle='round,pad=0.15', facecolor='white',
-                        edgecolor='none', alpha=0.8))
+    ax_b.text(0.255, 0.08, '90% Sens\n(0.245)',
+              fontsize=ANNO_SIZE - 1.5, color=COL_RED, ha='left',
+              va='bottom', style='italic')
 
     # Mark 90% specificity threshold
     ax_b.axvline(0.729, color=COL_PRIMARY, linewidth=0.7, linestyle=':',
                  zorder=1, alpha=0.5)
-    ax_b.text(0.78, 0.40, '90% Spec\np = 0.729',
-              fontsize=ANNO_SIZE - 1.5, color=COL_PRIMARY, ha='center',
-              va='center', style='italic',
-              bbox=dict(boxstyle='round,pad=0.15', facecolor='white',
-                        edgecolor='none', alpha=0.8))
+    ax_b.text(0.739, 0.08, '90% Spec\n(0.729)',
+              fontsize=ANNO_SIZE - 1.5, color=COL_PRIMARY, ha='left',
+              va='bottom', style='italic')
 
     ax_b.set_xlabel('Classification Threshold', fontsize=LABEL_SIZE)
     ax_b.set_ylabel('Metric Value', fontsize=LABEL_SIZE)
@@ -247,9 +246,9 @@ def main():
     ax_b.set_ylim(-0.02, 1.05)
     ax_b.set_title('Threshold-Performance\nTradeoff',
                     fontsize=TITLE_SIZE, fontweight='bold', pad=6)
-    ax_b.legend(loc='center left', fontsize=LEGEND_SIZE,
-                frameon=True, framealpha=0.9, edgecolor='#cccccc',
-                bbox_to_anchor=(0.0, 0.65))
+    ax_b.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12),
+                ncol=3, fontsize=LEGEND_SIZE,
+                frameon=True, framealpha=0.9, edgecolor='#cccccc')
     ax_b.spines['top'].set_visible(False)
     ax_b.spines['right'].set_visible(False)
     ax_b.tick_params(labelsize=TICK_SIZE)
@@ -398,8 +397,8 @@ def main():
               fontsize=PANEL_LABEL_SIZE, fontweight='bold', va='top')
 
     # ── Save ───────────────────────────────────────────────────────────
-    pdf_path = RESULTS_DIR / 'figure_s3_subgroup_threshold.pdf'
-    png_path = RESULTS_DIR / 'figure_s3_subgroup_threshold.png'
+    pdf_path = RESULTS_DIR / 'figures' / 'figure_s3_subgroup_threshold.pdf'
+    png_path = RESULTS_DIR / 'figures' / 'figure_s3_subgroup_threshold.png'
 
     fig.savefig(pdf_path, format='pdf', dpi=DPI, bbox_inches='tight')
     fig.savefig(png_path, format='png', dpi=DPI, bbox_inches='tight')

@@ -20,6 +20,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import roc_auc_score, accuracy_score, confusion_matrix
+from _grad_paths import (RESULTS, ADNI_DIR, A4_DIR, DATA_DIR, PROJECT_ROOT, SYNTHETIC)  # noqa: F401
 
 # Add src/ to path
 sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))

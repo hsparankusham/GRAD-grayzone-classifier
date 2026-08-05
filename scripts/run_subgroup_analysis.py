@@ -14,10 +14,10 @@ import pandas as pd
 from sklearn.metrics import roc_auc_score
 from pathlib import Path
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _grad_paths import (RESULTS, ADNI_DIR, A4_DIR, DATA_DIR, PROJECT_ROOT, SYNTHETIC)  # noqa: F401
 from data_loader import ADNIDataLoader
 
-RESULTS = Path(__file__).parent / 'results'
+from _grad_paths import RESULTS
 
 
 def compute_metrics(y_true, y_prob):
@@ -61,11 +61,7 @@ def main():
 
     # Load ADNI data to get demographics
     # Path: grayzone-classifier -> projects -> syntropi-ai-research -> Syntropi AI Group -> AlzheimersDisease_Research_Personal
-    adni_path = os.path.join(
-        os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(
-            os.path.dirname(os.path.abspath(__file__)))))),
-        'syntropi-ai-data', 'syntropi-ai-ADNI'
-    )
+    adni_path = str(ADNI_DIR)
 
     loader = ADNIDataLoader(adni_path)
     adni_df = loader.merge_data(use_baseline_only=True)

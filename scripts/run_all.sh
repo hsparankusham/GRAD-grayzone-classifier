@@ -6,11 +6,12 @@
 #   1. ADNI and A4 data access (see data/README_data.md)
 #   2. Python environment: pip install -r requirements.txt
 #
-# Usage:
-#   bash scripts/run_all.sh --adni-dir /path/to/adni --a4-dir /path/to/a4
+# Data location is resolved by scripts/_grad_paths.py. Override with:
+#   export GRAD_DATA_DIR=/path/to/syntropi-ai-data
 #
-# Or to run the demo with synthetic data (no data access needed):
-#   bash scripts/run_all.sh --demo
+# Usage:
+#   bash scripts/run_all.sh          # full reproduction
+#   bash scripts/run_all.sh --demo   # synthetic data, no access needed
 # ============================================================
 
 set -e
@@ -30,38 +31,38 @@ echo "  GRAD: Full Manuscript Reproduction Pipeline"
 echo "============================================================"
 echo ""
 
-# Step 1: ADNI Internal Validation (LOOCV)
-echo "[1/4] Running ADNI Leave-One-Out Cross-Validation..."
+# ---- Core analyses (must run first; every figure reads their output) ----
+echo "[1/4] ADNI leave-one-out cross-validation..."
 python3 scripts/run_authoritative_loocv.py
-echo "       Done. Output: results/adni_loocv_predictions.csv"
 echo ""
 
-# Step 2: A4 External Validation
-echo "[2/4] Running A4 + LEARN External Validation..."
+echo "[2/4] A4 + LEARN external validation, and MRI enhancement..."
 python3 scripts/run_a4_binary_validation.py
-echo "       Done. Output: results/a4_binary_validation_predictions.csv"
+python3 scripts/gray_zone_mri_enhancement.py
 echo ""
 
-# Step 3: Supplementary Analyses
-echo "[3/4] Running supplementary analyses..."
+# ---- Supplementary analyses ----
+echo "[3/4] Supplementary analyses..."
 python3 scripts/run_nfl_ablation.py
 python3 scripts/run_subgroup_analysis.py
 python3 scripts/run_calibration_analysis.py
-echo "       Done. Outputs in results/tables/"
+python3 scripts/run_reflex_training_comparison.py
 echo ""
 
-# Step 4: Generate Figures
-echo "[4/4] Generating manuscript figures..."
-python3 scripts/generate_figure2_combined.py
-python3 scripts/generate_figure3_final.py
-python3 scripts/generate_figure4.py
+# ---- Figures ----
+# generate_all_figures.py is the primary generator (Figures 2, 3, 4, 5, S1, S2, S3).
+# generate_manuscript_figures.py adds Figures 1 and 6.
+echo "[4/4] Generating figures..."
+python3 scripts/generate_all_figures.py
 python3 scripts/generate_manuscript_figures.py
-python3 scripts/generate_figure_s3_subgroup.py
-python3 scripts/generate_stard_diagram.py
-echo "       Done. Outputs in results/figures/"
+python3 scripts/generate_figure6_cost.py
+python3 scripts/generate_figure_panels.py
 echo ""
 
 echo "============================================================"
-echo "  All results generated successfully."
+echo "  Done. Outputs:"
+echo "    results/            prediction CSVs"
+echo "    results/figures/    manuscript figures (+ panels/)"
+echo "    results/tables/     supplementary tables"
 echo "  Compare against expected values in config/config.yaml"
 echo "============================================================"

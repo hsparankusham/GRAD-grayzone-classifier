@@ -60,6 +60,26 @@ class ValidationResults:
     feature_importance: pd.DataFrame = None
 
 
+def reconcile_stage_scale(prob, low, high):
+    """
+    Map a Stage-2 (Reflex) probability back into the band it was routed into.
+
+    GRAD reports one number per patient, but it comes from two models: a
+    logistic regression for Gatekeeper-resolved cases and a Random Forest for
+    gray-zone cases. Their outputs are not on a common scale, so a Reflex
+    probability can land outside [low, high] -- letting a case the Gatekeeper
+    deliberately declined to call outrank one it called with high confidence.
+    Any global ranking metric (AUC) penalises that incoherence: on ADNI the
+    pooled two-stage score scores 0.8566 while p-tau217 alone scores 0.8646.
+
+    The map is a fixed affine transform of [0, 1] onto [low, high]. It is
+    deterministic and depends on no other sample, so it introduces no leakage,
+    and it is strictly monotone, so within-gray-zone ordering -- and therefore
+    the gray-zone AUC -- is unchanged. Only cross-stage ordering is repaired.
+    """
+    return low + np.asarray(prob, dtype=float) * (high - low)
+
+
 class LOOCVValidator:
     """
     Leave-One-Out Cross-Validation for the two-stage system.
@@ -81,7 +101,8 @@ class LOOCVValidator:
         gatekeeper_high: float = 0.75,
         reflex_n_estimators: int = 100,
         reflex_max_depth: int = 5,
-        reflex_feature_cols: Optional[List[str]] = None
+        reflex_feature_cols: Optional[List[str]] = None,
+        reconcile_scales: bool = False
     ):
         """
         Initialize LOOCV validator.
@@ -99,6 +120,9 @@ class LOOCVValidator:
         self.reflex_n_estimators = reflex_n_estimators
         self.reflex_max_depth = reflex_max_depth
         self.reflex_feature_cols = reflex_feature_cols or self.REFLEX_FEATURES
+        # Put Stage-2 output on the same scale as Stage 1 (see
+        # reconcile_stage_scale). Set False to reproduce the pre-2026-08 scores.
+        self.reconcile_scales = reconcile_scales
 
     def validate_loocv(
         self,
@@ -187,6 +211,9 @@ class LOOCVValidator:
                         reflex.fit(train_gray_df, train_gray_y,
                                    feature_cols=self.reflex_feature_cols)
                         reflex_prob = reflex.predict_proba(test_harmonized)[0]
+                        if self.reconcile_scales:
+                            reflex_prob = reconcile_stage_scale(
+                                reflex_prob, self.gatekeeper_low, self.gatekeeper_high)
                         all_probs[test_idx[0]] = reflex_prob
 
                         # Accumulate feature importance
@@ -305,6 +332,8 @@ class ExternalValidator:
         self.gatekeeper = None
         self.reflex = None
         self.harmonizer = None
+        self.reconcile_scales = False
+        self._low, self._high = 0.25, 0.75
 
     def fit(
         self,
@@ -342,6 +371,7 @@ class ExternalValidator:
             low_threshold=gatekeeper_low,
             high_threshold=gatekeeper_high
         )
+        self._low, self._high = gatekeeper_low, gatekeeper_high
         self.gatekeeper.fit(train_harmonized, train_y)
 
         # Identify gray zone in training
@@ -392,6 +422,9 @@ class ExternalValidator:
             if gray_mask.sum() > 0:
                 gray_df = test_harmonized[gray_mask]
                 reflex_probs = self.reflex.predict_proba(gray_df)
+                if self.reconcile_scales:
+                    reflex_probs = reconcile_stage_scale(
+                        reflex_probs, self._low, self._high)
                 all_probs[gray_mask] = reflex_probs
                 all_stages[gray_mask] = 'reflex'
 

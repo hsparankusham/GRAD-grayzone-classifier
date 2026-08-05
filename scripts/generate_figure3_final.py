@@ -56,7 +56,8 @@ COL_LIGHT = '#BDBDBD'
 
 FEAT_COLORS = [COL_DEEP, COL_PRIMARY, COL_MED, COL_LIGHT_BLUE, COL_ACCENT, COL_PALE]
 
-RESULTS_DIR = Path(__file__).parent / 'results'
+from _grad_paths import RESULTS, load_threshold_sweep
+RESULTS_DIR = RESULTS
 
 
 def draw_section_header(fig, x0, x1, y, text):
@@ -107,7 +108,7 @@ def main():
     # ── Load data ──────────────────────────────────────────────────────
     df = pd.read_csv(RESULTS_DIR / 'adni_loocv_predictions.csv')
     subgroup = pd.read_csv(RESULTS_DIR / 'supp_table_subgroup_performance.csv')
-    threshold = pd.read_csv(RESULTS_DIR / 'supp_table_threshold_sensitivity.csv')
+    threshold = load_threshold_sweep()
 
     y_true = df['true_amyloid'].values.astype(int)
     y_pred = df['predicted_class'].values.astype(int)

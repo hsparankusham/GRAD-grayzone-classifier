@@ -1,0 +1,48 @@
+section,quantity,value
+"ADNI (development, LOOCV)",cohort n,320
+"ADNI (development, LOOCV)",amyloid-positive n (%),155 (48.4%)
+"ADNI (development, LOOCV)",full pipeline AUC [95% bootstrap CI],0.857 [0.811-0.899]
+"ADNI (development, LOOCV)",full pipeline AUPRC [95% CI],0.827 [0.760-0.898]
+"ADNI (development, LOOCV)",sensitivity / specificity,78.7% / 82.4%
+"ADNI (development, LOOCV)",PPV / NPV,80.8% / 80.5%
+"ADNI (development, LOOCV)",accuracy,80.6%
+"ADNI (development, LOOCV)",Brier score,0.148
+"ADNI (development, LOOCV)",Stage 1 resolved n (% of cohort),178 (55.6%)
+"ADNI (development, LOOCV)",Stage 1 resolved as positive / negative,78 / 100
+"ADNI (development, LOOCV)",Stage 1 AUC [95% CI],0.912 [0.858-0.957]
+"ADNI (development, LOOCV)",Stage 1 accuracy,88.8%
+"ADNI (development, LOOCV)",Stage 1 PPV / NPV,87.2% / 90.0%
+"ADNI (development, LOOCV)",Stage 2 (gray zone) n (% of cohort),142 (44.4%)
+"ADNI (development, LOOCV)",Stage 2 AUC [95% CI],0.751 [0.661-0.826]
+"ADNI (development, LOOCV)",Stage 2 accuracy,70.4%
+"ADNI (development, LOOCV)",Stage 2 sensitivity / specificity,70.1% / 70.8%
+A4 + LEARN (external validation),cohort n,"1,644"
+A4 + LEARN (external validation),amyloid-positive n (%),"1,145 (69.6%)"
+A4 + LEARN (external validation),full pipeline AUC [95% bootstrap CI],0.867 [0.849-0.883]
+A4 + LEARN (external validation),full pipeline AUPRC [95% CI],0.937 [0.923-0.949]
+A4 + LEARN (external validation),sensitivity / specificity,77.6% / 82.0%
+A4 + LEARN (external validation),PPV / NPV,90.8% / 61.4%
+A4 + LEARN (external validation),accuracy,78.9%
+A4 + LEARN (external validation),Brier score,0.148
+A4 + LEARN (external validation),Stage 1 resolved n (% of cohort),917 (55.8%)
+A4 + LEARN (external validation),Stage 1 resolved as positive / negative,589 / 328
+A4 + LEARN (external validation),Stage 1 AUC [95% CI],0.912 [0.891-0.930]
+A4 + LEARN (external validation),Stage 1 accuracy,88.5%
+A4 + LEARN (external validation),Stage 1 PPV / NPV,96.9% / 73.5%
+A4 + LEARN (external validation),Stage 2 (gray zone) n (% of cohort),727 (44.2%)
+A4 + LEARN (external validation),Stage 2 AUC [95% CI],0.731 [0.693-0.769]
+A4 + LEARN (external validation),Stage 2 accuracy,66.7%
+A4 + LEARN (external validation),Stage 2 sensitivity / specificity,65.1% / 70.0%
+stability,Stage 1 resolution rate ADNI -> A4,55.6% -> 55.8%  (difference 0.2 points)
+stability,full pipeline AUC ADNI -> A4,0.857 -> 0.867
+stability,Stage 1 AUC ADNI -> A4,0.912 -> 0.912
+stability,amyloid prevalence ADNI -> A4,48.4% -> 69.6%
+calibration,A4 Brier / slope / intercept,0.148 / 1.07 / +0.72
+calibration,A4 mean predicted vs observed,59.1% vs 69.6%
+centiloid,Spearman rho (predicted prob vs centiloid),"0.728  (n = 1,644)"
+features,p-tau217,34.6% [19.9-44.0]
+features,Age,15.8% [10.7-22.8]
+features,Tau/Aβ42 ratio,15.4% [10.9-23.7]
+features,GFAP × p-tau217,15.1% [10.2-25.8]
+features,APOE ε4,12.3% [3.0-21.3]
+features,GFAP,6.9% [4.5-13.1]

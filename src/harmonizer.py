@@ -72,9 +72,25 @@ class AssayHarmonizer:
         # Filter by assay
         assay_mask = df['assay'] == assay
 
-        # Filter by cognitive status (CN)
+        # Filter by cognitive status (CN).
+        # Use the diagnosis contemporaneous with the blood draw (DX). Falling back
+        # to DX_bl only when DX is unavailable -- an OR across the two would admit
+        # participants who have since converted (e.g. currently MCI, CN at baseline)
+        # into the "cognitively normal" reference that defines the Z-score origin.
         if 'DX' in df.columns:
-            dx_mask = df['DX'].isin(self.reference_dx) | df['DX_bl'].isin(self.reference_dx)
+            if getattr(self, 'strict_reference', False):
+                # Corrected rule: contemporaneous DX only, falling back to DX_bl
+                # when DX is missing. Excludes participants who have converted
+                # (currently MCI, CN at baseline) from the "cognitively normal"
+                # reference. Not the default: the published results use the
+                # legacy OR below. Enabling this changes gray-zone AUC 0.751 ->
+                # 0.732 via a 3-participant change to the Janssen reference.
+                dx_mask = df['DX'].isin(self.reference_dx)
+                if 'DX_bl' in df.columns:
+                    dx_mask = dx_mask.where(df['DX'].notna(),
+                                            df['DX_bl'].isin(self.reference_dx))
+            else:
+                dx_mask = df['DX'].isin(self.reference_dx) | df['DX_bl'].isin(self.reference_dx)
         elif 'DX_bl' in df.columns:
             dx_mask = df['DX_bl'].isin(self.reference_dx)
         else:

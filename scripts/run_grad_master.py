@@ -46,7 +46,7 @@ from scipy import stats
 warnings.filterwarnings('ignore')
 
 # Add current directory to path for data_loader import
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _grad_paths import (RESULTS, ADNI_DIR, A4_DIR, DATA_DIR, PROJECT_ROOT, SYNTHETIC)  # noqa: F401
 from data_loader import ADNIDataLoader, A4DataLoader
 
 
@@ -87,7 +87,7 @@ RF_RANDOM_STATE = 42           # Reproducibility seed
 N_BOOTSTRAP = 2000
 
 # Output directory
-RESULTS_DIR = Path(__file__).parent / 'results'
+RESULTS_DIR = RESULTS
 
 
 # ==============================================================================
@@ -117,16 +117,16 @@ def load_data():
     # Resolve paths: 4 levels up from grayzone-classifier to project root
     base = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(
         os.path.dirname(os.path.abspath(__file__))))))
-    data_dir = os.path.join(base, 'syntropi-ai-data')
+    data_dir = str(DATA_DIR)
 
     # Load ADNI
     print("\nLoading ADNI...")
-    adni_loader = ADNIDataLoader(os.path.join(data_dir, 'syntropi-ai-ADNI'))
+    adni_loader = ADNIDataLoader(str(ADNI_DIR))
     adni_df = adni_loader.merge_data(use_baseline_only=True)
 
     # Load A4
     print("\nLoading A4...")
-    a4_loader = A4DataLoader(os.path.join(data_dir, 'syntropi-ai-A4'))
+    a4_loader = A4DataLoader(str(A4_DIR))
     a4_df = a4_loader.merge_data(use_baseline_only=True)
 
     # Filter A4 to subjects with amyloid labels (need ground truth for validation)

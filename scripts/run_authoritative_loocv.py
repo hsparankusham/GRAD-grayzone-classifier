@@ -21,7 +21,6 @@ Outputs:
   - results/supp_table_by_stage.csv
   - results/supp_table_operating_points.csv
   - results/supp_table_bootstrap_ci.csv
-  - results/supp_table_threshold_sensitivity.csv
   - results/feature_ablation_results.csv
 """
 
@@ -30,18 +29,19 @@ import sys
 import json
 import numpy as np
 import pandas as pd
-from sklearn.metrics import roc_auc_score, roc_curve, brier_score_loss
+from sklearn.metrics import (roc_auc_score, roc_curve, brier_score_loss,
+                             average_precision_score)
 from sklearn.utils import resample
 from pathlib import Path
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _grad_paths import (RESULTS, ADNI_DIR, A4_DIR, DATA_DIR, PROJECT_ROOT, SYNTHETIC)  # noqa: F401
 from data_loader import ADNIDataLoader
 from harmonizer import AssayHarmonizer
 from gatekeeper import GatekeeperModel
 from reflex import ReflexModel
 from validation import LOOCVValidator
 
-RESULTS = Path(__file__).parent / 'results'
+from _grad_paths import RESULTS
 
 # The locked 6-feature set
 LOCKED_FEATURES = [
@@ -52,11 +52,7 @@ LOCKED_FEATURES = [
 
 def load_adni():
     """Load ADNI data."""
-    adni_path = os.path.join(
-        os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(
-            os.path.dirname(os.path.abspath(__file__)))))),
-        'syntropi-ai-data', 'syntropi-ai-ADNI'
-    )
+    adni_path = str(ADNI_DIR)
     loader = ADNIDataLoader(adni_path)
     return loader.merge_data(use_baseline_only=True)
 
@@ -196,6 +192,7 @@ def compute_bootstrap_ci(preds_df, n_boot=2000, seed=42):
     n = len(y_v)
 
     boot_aucs, boot_accs, boot_sens, boot_specs = [], [], [], []
+    boot_auprcs = []
 
     for _ in range(n_boot):
         idx = rng.choice(n, size=n, replace=True)
@@ -205,6 +202,7 @@ def compute_bootstrap_ci(preds_df, n_boot=2000, seed=42):
             continue
 
         boot_aucs.append(roc_auc_score(y_b, p_b))
+        boot_auprcs.append(average_precision_score(y_b, p_b))
         pred_b = (p_b >= 0.5).astype(int)
         boot_accs.append((pred_b == y_b).mean())
 
@@ -221,6 +219,7 @@ def compute_bootstrap_ci(preds_df, n_boot=2000, seed=42):
         return np.percentile(arr, 2.5), np.percentile(arr, 97.5)
 
     point_auc = roc_auc_score(y_v, p_v)
+    point_auprc = average_precision_score(y_v, p_v)
     pred_v = (p_v >= 0.5).astype(int)
     point_acc = (pred_v == y_v).mean()
     tp = ((pred_v == 1) & (y_v == 1)).sum()
@@ -233,6 +232,7 @@ def compute_bootstrap_ci(preds_df, n_boot=2000, seed=42):
     rows = []
     for name, point, boots in [
         ('AUC', point_auc, boot_aucs),
+        ('AUPRC', point_auprc, boot_auprcs),
         ('Accuracy', point_acc, boot_accs),
         ('Sensitivity', point_sens, boot_sens),
         ('Specificity', point_spec, boot_specs),
@@ -246,42 +246,6 @@ def compute_bootstrap_ci(preds_df, n_boot=2000, seed=42):
 
     return pd.DataFrame(rows)
 
-
-def compute_threshold_sensitivity(preds_df):
-    """Compute resolution rates and accuracy across threshold pairs."""
-    y = preds_df['true_amyloid'].values
-    p = preds_df['predicted_prob'].values
-
-    rows = []
-    for low in [0.15, 0.20, 0.25, 0.30, 0.35]:
-        for high in [0.65, 0.70, 0.75, 0.80, 0.85]:
-            neg_mask = p < low
-            pos_mask = p > high
-            resolved_mask = neg_mask | pos_mask
-            gray_mask = ~resolved_mask
-
-            n_neg = neg_mask.sum()
-            n_pos = pos_mask.sum()
-            n_resolved = resolved_mask.sum()
-            resolution_rate = n_resolved / len(p)
-
-            if n_resolved > 0:
-                resolved_preds = np.where(p[resolved_mask] >= 0.5, 1, 0)
-                resolved_acc = (resolved_preds == y[resolved_mask]).mean()
-            else:
-                resolved_acc = np.nan
-
-            rows.append({
-                'Low_Threshold': low, 'High_Threshold': high,
-                'Resolution_Rate': resolution_rate,
-                'Resolved_Accuracy': resolved_acc,
-                'Gray_Zone_N': gray_mask.sum(),
-                'Gray_Zone_%': gray_mask.mean() * 100,
-                'N_Classified_Negative': n_neg,
-                'N_Classified_Positive': n_pos,
-            })
-
-    return pd.DataFrame(rows)
 
 
 def compute_feature_ablation(df, target_col='amyloid_positive'):
@@ -369,8 +333,12 @@ def main():
 
     # 5. Threshold sensitivity
     print("\nComputing threshold sensitivity...")
-    thresh_df = compute_threshold_sensitivity(preds_df)
-    thresh_df.to_csv(RESULTS / 'supp_table_threshold_sensitivity.csv', index=False)
+    # REMOVED 2026-08-02: compute_threshold_sensitivity() banded the FINAL
+    # two-stage probability, not the Gatekeeper probability, so it did not
+    # describe the routing thresholds it appeared to. Its 0.25/0.75 row reported
+    # 73.8% resolved / n=84 against the main text's 55.6% / n=142.
+    # The correct analysis is scripts/GRAD_threshold_sweep.py, which refits the
+    # full LOOCV at each threshold pair.
 
     # 6. Feature ablation
     ablation_df = compute_feature_ablation(df)
@@ -413,7 +381,7 @@ def main():
     print("\nFiles regenerated:")
     for f in ['adni_loocv_predictions.csv', 'supp_table_by_stage.csv',
               'supp_table_operating_points.csv', 'supp_table_bootstrap_ci.csv',
-              'supp_table_threshold_sensitivity.csv', 'feature_ablation_results.csv']:
+              'feature_ablation_results.csv']:
         print(f"  results/{f}")
 
 

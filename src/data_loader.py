@@ -63,8 +63,11 @@ class ADNIDataLoader:
         df['assay'] = 'UPENN'
         df['PTID'] = df['PTID'].astype(str)
 
-        return df[['PTID', 'RID', 'VISCODE', 'VISCODE2', 'pTau217_raw', 'AB42_raw',
-                   'AB40_raw', 'AB42_40_ratio', 'NfL_raw', 'GFAP_raw', 'assay']]
+        df['EXAMDATE'] = pd.to_datetime(df.get('EXAMDATE'), errors='coerce')
+
+        return df[['PTID', 'RID', 'VISCODE', 'VISCODE2', 'EXAMDATE', 'pTau217_raw',
+                   'AB42_raw', 'AB40_raw', 'AB42_40_ratio', 'NfL_raw', 'GFAP_raw',
+                   'assay']]
 
     def load_janssen_biomarkers(self) -> pd.DataFrame:
         """Load Janssen plasma p-tau217."""
@@ -78,15 +81,16 @@ class ADNIDataLoader:
         df['assay'] = 'Janssen'
         df['PTID'] = df['PTID'].astype(str)
 
-        return df[['PTID', 'RID', 'VISCODE2', 'pTau217_raw', 'assay']]
+        df['EXAMDATE'] = pd.to_datetime(df.get('EXAMDATE'), errors='coerce')
+        return df[['PTID', 'RID', 'VISCODE2', 'EXAMDATE', 'pTau217_raw', 'assay']]
 
     def load_adnimerge(self) -> pd.DataFrame:
         """Load ADNIMERGE for demographics and amyloid PET."""
         df = pd.read_csv(self.paths['merge'])
 
         # Select relevant columns
-        cols = ['RID', 'PTID', 'VISCODE', 'DX', 'DX_bl', 'AGE', 'PTGENDER',
-                'PTEDUCAT', 'APOE4', 'AV45', 'AV45_bl', 'MMSE',
+        cols = ['RID', 'PTID', 'VISCODE', 'EXAMDATE', 'DX', 'DX_bl', 'AGE',
+                'PTGENDER', 'PTEDUCAT', 'APOE4', 'AV45', 'AV45_bl', 'MMSE',
                 'Hippocampus', 'Entorhinal', 'ICV']
         df = df[[c for c in cols if c in df.columns]]
 
@@ -115,12 +119,49 @@ class ADNIDataLoader:
 
         return df
 
-    def merge_data(self, use_baseline_only: bool = True) -> pd.DataFrame:
+    @staticmethod
+    def _pair_by_date(plasma: pd.DataFrame, merge: pd.DataFrame,
+                      window_days: int) -> pd.DataFrame:
+        """
+        Pair each plasma draw with its nearest amyloid-PET visit by date.
+
+        The default path matches on visit-code equality (VISCODE2 == VISCODE).
+        That is a string comparison standing in for a temporal criterion, and it
+        fails across ADNI phases that use different visit vocabularies -- a
+        baseline plasma draw coded 'bl' will not match an ADNIMERGE row coded
+        'v03', so the participant is dropped despite being eligible.
+
+        This pairs on EXAMDATE instead and keeps only pairs within window_days,
+        making the temporal criterion explicit and reportable.
+        """
+        pet = merge[merge['AV45'].notna()].copy()
+        pet['EXAMDATE'] = pd.to_datetime(pet['EXAMDATE'], errors='coerce')
+        plasma = plasma.copy()
+        plasma['EXAMDATE'] = pd.to_datetime(plasma['EXAMDATE'], errors='coerce')
+
+        pairs = plasma.merge(pet, on=['PTID', 'RID'], how='inner',
+                             suffixes=('', '_merge'))
+        pairs = pairs.dropna(subset=['EXAMDATE', 'EXAMDATE_merge'])
+        pairs['pet_gap_days'] = (
+            pairs['EXAMDATE'] - pairs['EXAMDATE_merge']).dt.days.abs()
+        pairs = pairs[pairs['pet_gap_days'] <= window_days]
+        # closest PET per plasma draw
+        pairs = pairs.sort_values('pet_gap_days').groupby(
+            ['PTID', 'EXAMDATE'], as_index=False).first()
+        return pairs
+
+    def merge_data(self, use_baseline_only: bool = True,
+                   match_by_date: Optional[int] = None) -> pd.DataFrame:
         """
         Merge UPENN and Janssen biomarkers with ADNIMERGE.
 
         Args:
-            use_baseline_only: If True, use only baseline visits
+            use_baseline_only: If True, keep one visit per participant.
+            match_by_date: If None (default, and what the manuscript used),
+                plasma is paired to ADNIMERGE by visit-code equality. If set to
+                a number of days, pair by nearest EXAMDATE within that window
+                instead -- an explicit temporal criterion. Changes the cohort,
+                so it is opt-in.
 
         Returns:
             Merged DataFrame with all biomarkers and amyloid status
@@ -129,6 +170,21 @@ class ADNIDataLoader:
         upenn = self.load_upenn_biomarkers()
         janssen = self.load_janssen_biomarkers()
         merge = self.load_adnimerge()
+
+        if match_by_date is not None:
+            upenn_merged = self._pair_by_date(upenn, merge, match_by_date)
+            janssen_merged = self._pair_by_date(janssen, merge, match_by_date)
+            combined = upenn_merged.copy()
+            janssen_only = janssen_merged[
+                ~janssen_merged['PTID'].isin(upenn_merged['PTID'])]
+            if len(janssen_only) > 0:
+                combined = pd.concat([combined, janssen_only], ignore_index=True)
+            if use_baseline_only:
+                # keep the draw with the tightest plasma-to-PET pairing, not
+                # merely the earliest visit
+                combined = combined.sort_values('pet_gap_days')
+                combined = combined.groupby('PTID', as_index=False).first()
+            return self._finalize(combined)
 
         # For UPENN: merge on PTID and VISCODE2
         upenn_merged = upenn.merge(
@@ -174,6 +230,11 @@ class ADNIDataLoader:
             combined = combined.sort_values(['PTID', 'VISCODE2'])
             combined = combined.groupby('PTID').first().reset_index()
 
+        return self._finalize(combined)
+
+    @staticmethod
+    def _finalize(combined: pd.DataFrame) -> pd.DataFrame:
+        """Apply the inclusion filter and derived flags (shared by both paths)."""
         # Filter to patients with amyloid PET and p-tau217
         combined = combined[
             combined['amyloid_positive'].notna() &

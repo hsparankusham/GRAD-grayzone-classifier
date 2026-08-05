@@ -25,7 +25,8 @@ plt.rcParams.update({
     'ytick.major.width': 0.8,
 })
 
-OUTPUT_DIR = os.path.join(os.path.dirname(__file__), 'results')
+from _grad_paths import RESULTS
+OUTPUT_DIR = RESULTS
 
 
 # =============================================================================
@@ -34,7 +35,7 @@ OUTPUT_DIR = os.path.join(os.path.dirname(__file__), 'results')
 
 def create_figure_1_combined():
     """Figure 1: (A) Gatekeeper-Reflex workflow, (B) Probability distribution."""
-    pred_path = os.path.join(OUTPUT_DIR, 'adni_loocv_predictions.csv')
+    pred_path = str(RESULTS / 'adni_loocv_predictions.csv')
     df = pd.read_csv(pred_path)
 
     fig = plt.figure(figsize=(16, 10))
@@ -125,7 +126,7 @@ def create_figure_1_combined():
     ax.text(-0.08, 1.05, 'B', fontsize=16, fontweight='bold',
             transform=ax.transAxes, va='top')
 
-    output_path = os.path.join(OUTPUT_DIR, 'figure_1_combined.png')
+    output_path = str(RESULTS / 'figure_1_combined.png')
     fig.savefig(output_path, dpi=300, bbox_inches='tight', facecolor='white')
     plt.close(fig)
     print(f"Saved: {output_path}")
@@ -137,7 +138,7 @@ def create_figure_1_combined():
     ax_a2.set_aspect('equal')
     ax_a2.axis('off')
     _draw_workflow_panel(fig_a, ax_a2, colors_wf)
-    out_a = os.path.join(OUTPUT_DIR, 'figure_1a_workflow.png')
+    out_a = str(RESULTS / 'figure_1a_workflow.png')
     fig_a.savefig(out_a, dpi=300, bbox_inches='tight', facecolor='white')
     plt.close(fig_a)
     print(f"Saved: {out_a}")
@@ -145,7 +146,7 @@ def create_figure_1_combined():
     # Standalone Panel B
     fig_b, ax_b2 = plt.subplots(figsize=(7, 5.5))
     _draw_distribution_panel(fig_b, ax_b2, df)
-    out_b = os.path.join(OUTPUT_DIR, 'figure_1b_probability_distribution.png')
+    out_b = str(RESULTS / 'figure_1b_probability_distribution.png')
     fig_b.savefig(out_b, dpi=300, bbox_inches='tight', facecolor='white')
     plt.close(fig_b)
     print(f"Saved: {out_b}")
@@ -401,7 +402,7 @@ def create_figure_2b_feature_importance():
     ax.spines['right'].set_visible(False)
     plt.tight_layout()
 
-    output_path = os.path.join(OUTPUT_DIR, 'figure_2b_feature_importance.png')
+    output_path = str(RESULTS / 'figure_2b_feature_importance.png')
     fig.savefig(output_path, dpi=300, bbox_inches='tight', facecolor='white')
     plt.close()
     print(f"Saved: {output_path}")
@@ -415,7 +416,7 @@ def create_figure_4_a4_validation():
     """Figure 4: (A) ROC curve AUC=0.821, (B) Centiloid scatter with LEARN."""
     from sklearn.metrics import roc_curve, auc as sk_auc
 
-    pred_path = os.path.join(OUTPUT_DIR, 'a4_binary_validation_predictions.csv')
+    pred_path = str(RESULTS / 'a4_binary_validation_predictions.csv')
     df = pd.read_csv(pred_path)
     df = df.dropna(subset=['true_amyloid', 'predicted_prob', 'centiloid'])
 
@@ -515,7 +516,7 @@ def create_figure_4_a4_validation():
 
     plt.tight_layout(rect=[0, 0.08, 1, 1])
 
-    output_path = os.path.join(OUTPUT_DIR, 'figure_4_a4_validation.png')
+    output_path = str(RESULTS / 'figure_4_a4_validation.png')
     fig.savefig(output_path, dpi=300, bbox_inches='tight', facecolor='white')
     plt.close()
     print(f"Saved: {output_path}")
@@ -612,7 +613,7 @@ def create_figure_5_mri_enhancement():
 
     plt.tight_layout(rect=[0, 0.06, 1, 1])
 
-    output_path = os.path.join(OUTPUT_DIR, 'figure_5_mri_enhancement.png')
+    output_path = str(RESULTS / 'figure_5_mri_enhancement.png')
     plt.savefig(output_path, dpi=300, bbox_inches='tight', facecolor='white')
     plt.close()
     print(f"Saved: {output_path}")
@@ -691,7 +692,7 @@ def create_figure_6_cost_comparison():
 
     plt.tight_layout()
 
-    output_path = os.path.join(OUTPUT_DIR, 'figure_6_cost_comparison.png')
+    output_path = str(RESULTS / 'figure_6_cost_comparison.png')
     plt.savefig(output_path, dpi=300, bbox_inches='tight', facecolor='white')
     plt.close()
     print(f"Saved: {output_path}")

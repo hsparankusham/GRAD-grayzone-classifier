@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-03-25T16:40:22.413546",
+  "timestamp": "2026-08-04T11:21:21.243057",
   "description": "A4 + LEARN binary external validation (centiloid >= 20 = amyloid+)",
   "training": {
     "cohort": "ADNI",
@@ -13,33 +13,33 @@
     "n_positive": 1145,
     "n_negative": 499,
     "prevalence": 0.6965,
-    "auc": 0.8282,
+    "auc": 0.8666,
     "auc_95ci": [
-      0.8063,
-      0.8485
+      0.8476,
+      0.8836
     ],
-    "accuracy": 0.7494,
-    "sensitivity": 0.7354,
-    "specificity": 0.7816,
-    "ppv": 0.8854,
-    "npv": 0.5628,
-    "brier": 0.1745,
+    "accuracy": 0.7889,
+    "sensitivity": 0.7755,
+    "specificity": 0.8196,
+    "ppv": 0.908,
+    "npv": 0.6141,
+    "brier": 0.1482,
     "confusion_matrix": {
-      "TP": 842,
-      "TN": 390,
-      "FP": 109,
-      "FN": 303
+      "TP": 888,
+      "TN": 409,
+      "FP": 90,
+      "FN": 257
     }
   },
   "operating_points": {
     "rule_out_90": {
-      "threshold": 0.3407973911414643,
+      "threshold": 0.28361787201753785,
       "sensitivity": 0.9004366812227074,
-      "specificity": 0.4889779559118237
+      "specificity": 0.623246492985972
     },
     "rule_in_90": {
-      "threshold": 0.6114324597353754,
-      "sensitivity": 0.5056768558951965,
+      "threshold": 0.6543468133620448,
+      "sensitivity": 0.6585152838427948,
       "specificity": 0.9018036072144289
     }
   },
@@ -66,8 +66,8 @@
       "APOE4_carrier": 0.1146,
       "gfap_tau_interaction": 0.1642
     },
-    "n_gatekeeper_neg": 2,
-    "n_gatekeeper_pos": 349,
-    "n_reflex": 1293
+    "n_gatekeeper_neg": 328,
+    "n_gatekeeper_pos": 589,
+    "n_reflex": 727
   }
 }

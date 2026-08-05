@@ -15,13 +15,14 @@ plt.style.use('seaborn-v0_8-whitegrid')
 plt.rcParams['font.family'] = 'sans-serif'
 plt.rcParams['font.size'] = 10
 
-OUTPUT_DIR = os.path.join(os.path.dirname(__file__), 'results')
+from _grad_paths import RESULTS
+OUTPUT_DIR = RESULTS
 
 
 def create_figure_2_combined():
     """Create combined 3-panel ROC figure from actual LOOCV predictions."""
 
-    pred_path = os.path.join(OUTPUT_DIR, 'adni_loocv_predictions.csv')
+    pred_path = str(RESULTS / 'adni_loocv_predictions.csv')
     df = pd.read_csv(pred_path)
 
     fig, axes = plt.subplots(1, 3, figsize=(14, 4.5))
@@ -94,7 +95,7 @@ def create_figure_2_combined():
 
     plt.tight_layout()
 
-    output_path = os.path.join(OUTPUT_DIR, 'figure_2_roc_combined.png')
+    output_path = str(RESULTS / 'figure_2_roc_combined.png')
     plt.savefig(output_path, dpi=300, bbox_inches='tight', facecolor='white')
     plt.savefig(output_path.replace('.png', '.pdf'), dpi=300,
                 bbox_inches='tight', facecolor='white')

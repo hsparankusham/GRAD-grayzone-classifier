@@ -1,0 +1,11 @@
+block,series,gray_zone,n,source
+"Cognitively
+unimpaired",ADNI,0.5314285714285715,175,this study
+"Cognitively
+unimpaired",A4,0.46167883211678834,1644,this study
+"Cognitively
+unimpaired",Giacomucci,0.2258,124,published
+MCI,ADNI,0.42735042735042733,117,this study
+MCI,Giacomucci,0.2155,188,published
+Dementia,ADNI,0.35714285714285715,28,this study
+Dementia,Giacomucci,0.0677,136,published

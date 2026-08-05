@@ -49,7 +49,8 @@ COL_CHANCE = '#aaaaaa'      # Light gray for chance line
 COL_CAL = '#1f77b4'         # Steel blue for calibration curve (matches ROC)
 COL_HIST = '#1f77b4'        # Steel blue for histogram bars
 
-RESULTS_DIR = Path(__file__).parent / 'results'
+from _grad_paths import RESULTS
+RESULTS_DIR = RESULTS
 
 
 def main():
