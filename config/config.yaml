@@ -8,6 +8,7 @@ random_seed: 42
 
 # Data
 adni:
+  cohort: "cognitively impaired (MCI + AD dementia), N=145"
   amyloid_threshold_suvr: 1.11        # AV45 SUVR cutoff for amyloid positivity
   reference_population: "CN_amyloid_negative"  # Cognitively normal, amyloid-negative
 
@@ -32,21 +33,24 @@ gatekeeper:
   threshold_positive: 0.75            # P(amyloid+) > 0.75 → Positive
   # Gray zone: 0.25 <= P <= 0.75 → passed to Reflex (Stage 2)
 
-# Stage 2: Reflex (multi-marker random forest)
+# Stage 2: Reflex (multi-marker regularized logistic regression)
 reflex:
-  model: "RandomForestClassifier"
-  n_estimators: 100
-  max_depth: 5
-  min_samples_leaf: 5
+  model: "LogisticRegression"
+  penalty: "l2"
+  C: 0.1                              # Fixed a priori for strong shrinkage
+  solver: "lbfgs"
+  max_iter: 2000
   class_weight: "balanced"
   scaler: "StandardScaler"            # Fit on training gray zone, transform test
   features:
     - pTau217_Z                       # Harmonized plasma p-tau217
     - tau_ab42_diff                    # log1p(pTau217) - log1p(AB42/40 ratio)
     - GFAP_Z                          # Harmonized plasma GFAP
-    - AGE                              # Raw age in years (RF is scale-invariant)
+    - AGE                              # Raw age in years
     - APOE4_carrier                   # Binary APOE4 carrier status
     - gfap_tau_interaction            # GFAP_Z * pTau217_Z
+    - AB4240_log                      # log1p(AB42/40), not reference-anchored
+  indeterminate_band: [0.40, 0.60]    # Stage 2 output inside band -> Ab-PET
 
 # Feature engineering
 features:
@@ -56,7 +60,7 @@ features:
 
 # Validation
 validation:
-  internal: "LOOCV"                   # Leave-one-out cross-validation (N=320)
+  internal: "LOOCV"                   # Leave-one-out cross-validation (N=145)
   external: "A4_LEARN"               # Independent cohort (N=1,644)
   bootstrap_iterations: 2000         # For 95% confidence intervals
   bootstrap_ci_method: "percentile"  # 2.5th and 97.5th percentiles
@@ -68,9 +72,10 @@ operating_points:
 
 # Expected results (for verification of reproduction)
 expected_results:
-  adni_loocv_auc: 0.8566
-  a4_external_auc: 0.8282
-  gatekeeper_resolution_rate: 0.556
-  gatekeeper_accuracy: 0.8876
-  spearman_centiloid: 0.642
-  brier_score_a4: 0.174
+  adni_loocv_auc: 0.915             # Full pipeline, N=145
+  a4_external_auc: 0.879            # Full pipeline, N=1,644
+  gatekeeper_resolution_rate: 0.662 # ADNI; 0.617 in A4 + LEARN
+  gatekeeper_accuracy: 0.938        # ADNI, among resolved cases
+  gray_zone_auc_a4: 0.793           # Stage 2 within the A4 gray zone, N=630
+  spearman_centiloid: 0.748
+  brier_score_a4: 0.145

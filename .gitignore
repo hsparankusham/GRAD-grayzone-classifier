@@ -33,3 +33,9 @@ data/processed/
 
 # Jupyter
 .ipynb_checkpoints/
+
+# Manuscript working drafts and internal review notes — not for the public repo.
+# EDIT_CHECKLIST_v3 and SUPPLEMENT_LIST record internal analysis decisions.
+manuscript/*
+!manuscript/ICMJE_Disclosure_Template.md
+!manuscript/TRIPOD_AI_Checklist_GRAD.md

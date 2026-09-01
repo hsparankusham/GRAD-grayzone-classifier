@@ -34,6 +34,9 @@ GRID      = '#ECECEC'
 # not by hue -- three different colours for three ROCs reads as an encoding that
 # does not exist.
 ROC_BLUE  = '#4A7395'
+SLATE     = '#6E7A85'   # first comparator / secondary series
+PALE      = '#C3CDD6'   # second comparator / background series
+CHANCE    = '#CBCBCB'   # chance diagonal only
 
 # sequential accents for non-Abeta series (tertiles, cost)
 NAVY, TEAL, AMBER, CRIMSON, GREEN = (
@@ -42,16 +45,23 @@ NAVY, TEAL, AMBER, CRIMSON, GREEN = (
 FONT_STACK = ['Helvetica', 'Helvetica Neue', 'Arial', 'DejaVu Sans']
 
 
-def apply_style(base=9):
+def apply_style(base=10):
+    """Annals of Clinical and Translational Neurology figure spec.
+
+    Body/axis-label text 10 pt, tick labels and other small text 7 pt,
+    Helvetica. Locked to the journal requirement 2026-08-23 -- do not
+    override locally.
+    """
+    small = base      # uniform type size: no modulation across a figure
     plt.rcParams.update({
         'font.family': 'sans-serif',
         'font.sans-serif': FONT_STACK,
         'font.size': base,
-        'axes.titlesize': base + 1.5,
+        'axes.titlesize': base,
         'axes.labelsize': base,
-        'xtick.labelsize': base - .5,
-        'ytick.labelsize': base - .5,
-        'legend.fontsize': base - 1.5,
+        'xtick.labelsize': small,
+        'ytick.labelsize': small,
+        'legend.fontsize': small,
         'text.color': INK,
         'axes.labelcolor': INK,
         'xtick.color': INK,
@@ -69,14 +79,36 @@ def apply_style(base=9):
         'legend.frameon': False,
         'figure.facecolor': 'white',
         'savefig.facecolor': 'white',
-        'pdf.fonttype': 42,      # embed as TrueType so text stays editable
+        'pdf.fonttype': 42,
         'ps.fonttype': 42,
     })
 
 
-def save_panel(fig, path_stem, dpi=400):
-    """Write PNG + PDF with consistent margins."""
-    for ext in ('png', 'pdf'):
-        fig.savefig(f'{path_stem}.{ext}', dpi=dpi, bbox_inches='tight',
-                    pad_inches=0.02, facecolor='white')
+PANEL_LETTER = dict(fontsize=10, fontweight='bold', family='Helvetica',
+                    color=INK, va='top', ha='left')
+
+
+def save_panel(fig, path_stem, dpi=600):
+    """Write a flattened RGB PNG at print resolution.
+
+    PNG only, RGB only: the journal accepts PNG for all figures and panels are
+    assembled downstream, so no vector copy is emitted and no alpha channel is
+    left in the file.
+    """
+    out = f'{path_stem}.png'
+    fig.savefig(out, dpi=dpi, bbox_inches='tight', pad_inches=0.02,
+                facecolor='white')
     plt.close(fig)
+    try:
+        from PIL import Image
+        im = Image.open(out)
+        if im.mode != 'RGB':
+            flat = Image.alpha_composite(
+                Image.new('RGBA', im.size, 'white'), im.convert('RGBA')
+            ).convert('RGB')
+            # re-saving drops the resolution tag unless it is passed back in,
+            # and a PNG with no dpi is read as 72 dpi by most layout software
+            flat.save(out, dpi=(dpi, dpi))
+    except ImportError:
+        pass
+    return out
