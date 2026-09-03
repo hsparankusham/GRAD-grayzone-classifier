@@ -565,10 +565,41 @@ def write_docx(T, diff):
     return path
 
 
+def write_legends(T, diff):
+    """The legend list ACTN wants at the end of the manuscript, after the
+    references and figure legends. Emitted from the same constants as the
+    supplement itself so the two cannot diverge."""
+    doc = Document()
+    s = doc.sections[0]
+    s.left_margin = s.right_margin = Inches(1.0)
+
+    legend(doc, 'Supplementary Material Legends')
+    legend(doc, '', 'The following files are provided as Supporting Information.',
+           bold_label=False)
+    legend(doc, '', '')
+
+    for key, title, _head, note, _o, _w in SPEC:
+        note = s2_note(diff) if key == 'S2' else note
+        par = double(doc.add_paragraph())
+        style_run(par.add_run(f'Supplementary Table {key}. '), LEGEND_FONT,
+                  bold=True)
+        style_run(par.add_run(title + '. ' + (note or '')), LEGEND_FONT)
+
+    par = double(doc.add_paragraph())
+    style_run(par.add_run('Supplementary Figure S1. '), LEGEND_FONT, bold=True)
+    style_run(par.add_run('Full-pipeline discrimination by subgroup, ADNI '
+                          'development cohort. ' + FIGS1_NOTE), LEGEND_FONT)
+
+    path = PROJECT_ROOT / 'manuscript' / 'GRAD_ACTN_Supplementary_Legends.docx'
+    doc.save(path)
+    return path
+
+
 def main():
     T, diff = build()
     print('wrote', write_md(T, diff))
     print('wrote', write_docx(T, diff))
+    print('wrote', write_legends(T, diff))
     for key, *_ in SPEC:
         print(f'  {key}: {len(T[key])} rows')
 

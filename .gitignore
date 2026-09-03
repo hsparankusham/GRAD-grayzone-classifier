@@ -39,3 +39,6 @@ data/processed/
 manuscript/*
 !manuscript/ICMJE_Disclosure_Template.md
 !manuscript/TRIPOD_AI_Checklist_GRAD.md
+
+# Machine-specific data locations
+scripts/_local_paths.py

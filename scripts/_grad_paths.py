@@ -2,38 +2,42 @@
 Central path resolution for every GRAD script.
 ==============================================
 
-Importing this module does two things:
+This module exposes the project's data and output locations. Every script
+resolves paths through here, so moving or renaming the project directory cannot
+break them — nothing counts directory levels.
 
-1. Puts ``<project>/src`` on ``sys.path`` so ``from data_loader import ...``
-   works regardless of where the script is invoked from.
-2. Exposes the project's data and output locations.
+The restricted-access cohorts are not in the repository. Point at them either
+with environment variables:
 
-Every script resolves paths through here, so moving or renaming the project
-directory cannot break them again — nothing counts directory levels.
+    export GRAD_DATA_DIR=/path/to/data        # parent of the two cohort folders
+    export GRAD_ADNI_DIR=ADNI                 # optional, if named differently
+    export GRAD_A4_DIR=A4                     # optional
 
-Override the data location without editing code:
-
-    export GRAD_DATA_DIR=/path/to/syntropi-ai-data
+or by creating ``scripts/_local_paths.py`` (gitignored) with the same names as
+module-level variables. See data/README_data.md.
 """
 
 import os
-import sys
 from pathlib import Path
 
-# --- project layout -------------------------------------------------------
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-SRC = PROJECT_ROOT / 'src'
-if str(SRC) not in sys.path:
-    sys.path.insert(0, str(SRC))
 
 # --- restricted-access data (not in the repo; see data/README_data.md) -----
-_DEFAULT_DATA = Path(
-    '/Users/harthikparankusham/Desktop/AlzheimersDisease_Research_Personal'
-    '/syntropi-ai-data'
-)
-DATA_DIR = Path(os.environ.get('GRAD_DATA_DIR', _DEFAULT_DATA))
-ADNI_DIR = DATA_DIR / 'syntropi-ai-ADNI'
-A4_DIR = DATA_DIR / 'syntropi-ai-A4'
+try:
+    import _local_paths as _local            # gitignored, machine specific
+except ImportError:
+    _local = None
+
+
+def _resolve(env, attr, default):
+    if os.environ.get(env):
+        return os.environ[env]
+    return getattr(_local, attr, default) if _local else default
+
+
+DATA_DIR = Path(_resolve('GRAD_DATA_DIR', 'GRAD_DATA_DIR', ''))
+ADNI_DIR = DATA_DIR / _resolve('GRAD_ADNI_DIR', 'GRAD_ADNI_DIR', 'ADNI')
+A4_DIR = DATA_DIR / _resolve('GRAD_A4_DIR', 'GRAD_A4_DIR', 'A4')
 SYNTHETIC = PROJECT_ROOT / 'data' / 'synthetic' / 'synthetic_cohort.csv'
 
 # --- outputs --------------------------------------------------------------
@@ -125,6 +129,7 @@ def require_data():
     if missing:
         raise SystemExit(
             'GRAD data not found:\n  ' + '\n  '.join(missing) +
-            '\n\nSet GRAD_DATA_DIR to the directory containing '
-            'syntropi-ai-ADNI/ and syntropi-ai-A4/, or see data/README_data.md.'
+            '\n\nSet GRAD_DATA_DIR (and optionally GRAD_ADNI_DIR / '
+            'GRAD_A4_DIR) to point at the two cohort directories, or create '
+            'scripts/_local_paths.py. See data/README_data.md.'
         )
