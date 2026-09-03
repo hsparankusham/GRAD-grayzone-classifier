@@ -121,7 +121,7 @@ def main():
     print("=" * 60)
 
     # Load ADNI data
-    # Path: grayzone-classifier -> projects -> syntropi-ai-research -> Syntropi AI Group -> AlzheimersDisease_Research_Personal
+    # Path: grayzone-classifier -> projects -> the project-research -> the project Group -> AlzheimersDisease_Research_Personal
     adni_path = str(ADNI_DIR)
 
     loader = ADNIDataLoader(adni_path)

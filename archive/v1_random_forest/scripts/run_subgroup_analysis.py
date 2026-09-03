@@ -60,7 +60,7 @@ def main():
     preds = pd.read_csv(RESULTS / 'adni_loocv_predictions.csv')
 
     # Load ADNI data to get demographics
-    # Path: grayzone-classifier -> projects -> syntropi-ai-research -> Syntropi AI Group -> AlzheimersDisease_Research_Personal
+    # Path: grayzone-classifier -> projects -> the project-research -> the project Group -> AlzheimersDisease_Research_Personal
     adni_path = str(ADNI_DIR)
 
     loader = ADNIDataLoader(adni_path)

@@ -30,7 +30,7 @@ class ADNIDataLoader:
         Initialize ADNI data loader.
 
         Args:
-            base_dir: Path to syntropi-ai-ADNI directory
+            base_dir: Path to ADNI directory
         """
         self.base_dir = base_dir
         self.paths = {
@@ -264,7 +264,7 @@ class A4DataLoader:
         Initialize A4 data loader.
 
         Args:
-            base_dir: Path to syntropi-ai-A4 directory
+            base_dir: Path to A4 directory
         """
         self.base_dir = base_dir
         self.paths = {
@@ -408,7 +408,7 @@ def load_adni_data(base_dir: Optional[str] = None) -> pd.DataFrame:
     if base_dir is None:
         base_dir = os.path.join(
             os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
-            'syntropi-ai-ADNI'
+            'ADNI'
         )
     loader = ADNIDataLoader(base_dir)
     return loader.merge_data()
@@ -419,7 +419,7 @@ def load_a4_data(base_dir: Optional[str] = None) -> pd.DataFrame:
     if base_dir is None:
         base_dir = os.path.join(
             os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
-            'syntropi-ai-A4'
+            'A4'
         )
     loader = A4DataLoader(base_dir)
     return loader.merge_data()

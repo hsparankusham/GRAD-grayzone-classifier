@@ -34,7 +34,7 @@ def get_data_paths():
     current_dir = os.path.dirname(os.path.abspath(__file__))
     neuro_dir = os.path.dirname(current_dir)
     moirai_dir = os.path.dirname(neuro_dir)
-    syntropi_dir = os.path.dirname(moirai_dir)
+    parent_dir = os.path.dirname(moirai_dir)
 
     # Navigate up to AlzheimersDisease_Research_Personal
     base_dir = current_dir

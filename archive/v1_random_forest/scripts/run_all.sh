@@ -7,7 +7,7 @@
 #   2. Python environment: pip install -r requirements.txt
 #
 # Data location is resolved by scripts/_grad_paths.py. Override with:
-#   export GRAD_DATA_DIR=/path/to/syntropi-ai-data
+#   export GRAD_DATA_DIR=/path/to/data
 #
 # Usage:
 #   bash scripts/run_all.sh          # full reproduction
