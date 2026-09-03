@@ -2,8 +2,9 @@ cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 title: "GRAD: Gatekeeper-Reflex for Alzheimer's Diagnostics"
 type: software
-version: 1.0.0
-date-released: 2026-03-09
+doi: 10.5281/zenodo.18932865
+version: 2.0.0
+date-released: 2026-09-03
 url: "https://github.com/hsparankusham/GRAD-grayzone-classifier"
 license: MIT
 authors:
@@ -12,7 +13,7 @@ authors:
   - family-names: Vanderlip
     given-names: Casey
   - family-names: Birkenbihl
-    given-names: Colin Jan
+    given-names: Colin
   - family-names: Krishna
     given-names: Eashwar
   - family-names: Ugboaja

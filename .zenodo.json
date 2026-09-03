@@ -1,25 +1,27 @@
 {
-    "title": "Code for: GRAD: A Two-Stage Machine Learning Algorithm Resolves the Plasma p-Tau217 Diagnostic Gray Zone for Amyloid PET Prediction",
-    "description": "Two-stage diagnostic algorithm (Gatekeeper-Reflex for Alzheimer's Diagnostics) that resolves diagnostic uncertainty in plasma p-tau217 testing by combining a univariate logistic regression screen with a multi-marker random forest classifier for gray zone cases.",
-    "creators": [
-        {"name": "Parankusham, Harthik", "affiliation": "Syntropi AI Group"},
-        {"name": "Vanderlip, Casey", "affiliation": "Syntropi AI Group"},
-        {"name": "Birkenbihl, Colin Jan", "affiliation": "Harvard Medical School / Massachusetts General Hospital"},
-        {"name": "Krishna, Eashwar", "affiliation": "Syntropi AI Group"},
-        {"name": "Ugboaja, Chizobam", "affiliation": "Syntropi AI Group"},
-        {"name": "Budson, Andrew", "affiliation": "VA Boston Healthcare System / Boston University"},
-        {"name": "Frank, Brandon", "affiliation": "Syntropi AI Group"}
-    ],
+    "title": "Code for: A Two-Stage Plasma Biomarker Algorithm Reduces Amyloid PET Use and the p-Tau217 Gray Zone",
+    "description": "GRAD (Gatekeeper-Reflex for Alzheimer's Diagnostics) is a two-stage plasma biomarker algorithm that resolves the indeterminate p-tau217 gray zone and reserves amyloid PET for residual uncertainty. Stage 1 is a univariate logistic regression on reference-anchored p-tau217 that routes cases with predicted probability between 0.25 and 0.75 forward. Stage 2 is an L2-regularized logistic regression (C = 0.1, balanced class weights) scoring those cases on seven plasma, genetic and demographic features. The model was developed in 145 cognitively impaired ADNI participants under leave-one-out cross-validation and validated without refitting in 1,644 cognitively unimpaired A4 and LEARN participants. This release contains the analysis pipeline, figure and supplementary-table generation, and the reference-anchoring sensitivity analysis. Superseded random-forest code from the earlier design is retained under archive/ for provenance.",
+    "version": "2.0.0",
     "upload_type": "software",
     "access_right": "open",
     "license": "MIT",
+    "creators": [
+        {"name": "Parankusham, Harthik", "affiliation": "University of Connecticut"},
+        {"name": "Vanderlip, Casey", "affiliation": "University of California Irvine"},
+        {"name": "Birkenbihl, Colin", "affiliation": "Massachusetts General Hospital / Harvard Medical School"},
+        {"name": "Krishna, Eashwar", "affiliation": "University of Connecticut"},
+        {"name": "Ugboaja, Chizobam", "affiliation": "Yale School of Medicine"},
+        {"name": "Budson, Andrew", "affiliation": "VA Boston Healthcare System / Boston University Chobanian & Avedisian School of Medicine"},
+        {"name": "Frank, Brandon", "affiliation": "VA Boston Healthcare System / Boston University Chobanian & Avedisian School of Medicine"}
+    ],
     "keywords": [
         "Alzheimer's disease",
         "plasma biomarkers",
         "p-tau217",
         "amyloid PET",
-        "machine learning",
+        "logistic regression",
         "clinical decision support",
-        "diagnostic gray zone"
+        "diagnostic gray zone",
+        "reflex testing"
     ]
 }
