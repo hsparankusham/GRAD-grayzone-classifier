@@ -49,18 +49,18 @@ Each author must individually complete and sign an ICMJE Conflict of Interest di
 
 ### Section 8: Leadership or Fiduciary Roles
 - Report any leadership or fiduciary roles in other entities
-- **Note:** If an author holds a position at Syntropi AI, this should be disclosed here
+- If none, check "No"
 
 ### Section 9: Stock or Stock Options
 - Report any stock or stock options in entities related to the submitted work
-- **Note:** Any equity in Syntropi AI should be disclosed here
+- If none, check "No"
 
 ### Section 10: Other Financial or Non-Financial Interests
 - Report any other relationships or activities that readers could perceive as having influenced the work
 - If none, check "No"
 
 4. Download the completed PDF
-5. Send to the corresponding author (Brandon Frank) for compilation
+5. Send to the corresponding author (Harthik Parankusham) for compilation
 
 ---
 
@@ -68,13 +68,13 @@ Each author must individually complete and sign an ICMJE Conflict of Interest di
 
 | # | Author | Affiliation | Key Disclosures to Report |
 |---|--------|-------------|--------------------------|
-| 1 | Harthik Parankusham | UConn / Syntropi AI | Syntropi AI affiliation |
-| 2 | Casey Vanderlip | UC Irvine / Syntropi AI | Syntropi AI affiliation |
-| 3 | Colin Jan Birkenbihl | Harvard/MGH | Any consulting or advisory roles |
-| 4 | Eashwar Krishna | UConn / Syntropi AI | Syntropi AI affiliation |
-| 5 | Chizobam Ugboaja | Yale / Syntropi AI | Syntropi AI affiliation |
-| 6 | Andrew Budson | VA Boston / BU | Any advisory roles, grants |
-| 7 | Brandon Frank* | VA Boston / BU / Syntropi AI | Syntropi AI affiliation; corresponding author |
+| 1 | Harthik Parankusham* | University of Connecticut | Corresponding author |
+| 2 | Casey Vanderlip | University of California Irvine | Any consulting or advisory roles |
+| 3 | Colin Birkenbihl | Massachusetts General Hospital / Harvard Medical School | Any consulting or advisory roles |
+| 4 | Eashwar Krishna | University of Connecticut | Any consulting or advisory roles |
+| 5 | Chizobam Ugboaja | Yale School of Medicine | Any consulting or advisory roles |
+| 6 | Andrew Budson | VA Boston Healthcare System / Boston University | VA and NIH grant support; any advisory roles |
+| 7 | Brandon Frank | VA Boston Healthcare System / Boston University | VA grant support; any advisory roles |
 
 *Corresponding author
 
@@ -84,17 +84,13 @@ Each author must individually complete and sign an ICMJE Conflict of Interest di
 
 - Each author should complete their form **before submission**
 - The corresponding author collects all 7 forms
-- Upload all forms during the ART submission process
+- Upload all forms during the ACTN submission process
 
 ---
 
-## Note on Syntropi AI
+## General guidance
 
-If Syntropi AI is a for-profit entity, all authors affiliated with it should disclose:
-- Their role (Section 8: Leadership/Fiduciary)
-- Any equity/stock (Section 9)
-- The company's relationship to the submitted work (Section 10)
-
-If Syntropi AI is a non-profit research group with no commercial interests, authors should still disclose the affiliation but can note "no financial interests" in the relevant sections.
-
-Transparency is key — disclose everything and let the editor assess relevance.
+Transparency is key — disclose everything and let the editor assess relevance. The
+manuscript currently declares no conflicts for any author; each form should be
+completed independently and the Conflicts of Interest statement updated if any
+author reports otherwise.
