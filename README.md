@@ -31,24 +31,6 @@ The model is developed in **cognitively impaired** ADNI participants and validat
 without refitting, in a **preclinical** A4 + LEARN cohort — two clinically distinct
 populations measured on different p-tau217 assay platforms.
 
-### Key results
-
-| | ADNI (development, LOOCV) | A4 + LEARN (external) |
-|---|:---:|:---:|
-| n | 145 | 1,644 |
-| **Full pipeline AUC** | **0.915** (0.859–0.961) | **0.879** (0.861–0.895) |
-| Accuracy | 87.6% | 80.3% |
-| Sensitivity / Specificity | 89.4% / 85.0% | 76.7% / 88.6% |
-| Stage 1 resolved | 66.2% @ AUC 0.939 | 61.7% @ AUC 0.904 |
-| Stage 2 gray zone AUC | 0.781 (n = 49) | 0.793 (n = 630) |
-| Classified without PET | 89.0% | 90.7% |
-
-In the external gray zone, Stage 2 improved discrimination over p-tau217 alone
-(0.793 vs 0.719, DeLong *P* < .001) and over p-tau181 integration in the subset with
-matched measurements (0.799 vs 0.597, *P* < .001).
-
----
-
 ## Repository structure
 
 ```
@@ -121,37 +103,6 @@ python scripts/GRAD_supplementary_tables.py
 
 Step 1 is the source of truth: every figure and table script reads from the JSON and the
 two prediction files it writes, so the manuscript cannot drift from the code.
-
-### Verifying reproduction
-
-| Quantity | Expected |
-|---|:---:|
-| ADNI full-pipeline AUC (LOOCV) | 0.915 |
-| A4 + LEARN full-pipeline AUC | 0.879 |
-| Stage 1 resolution rate (ADNI) | 66.2% |
-| Stage 2 gray zone AUC (A4 + LEARN) | 0.793 |
-| Spearman ρ, predicted probability vs Centiloid | 0.748 |
-| Brier score (A4 + LEARN) | 0.145 |
-
-These are also recorded under `expected_results` in `config/config.yaml`.
-
----
-
-## Notes on method
-
-**Reference anchoring.** Biomarkers are Z-scored against a reference population within
-each cohort and assay platform, `Z = (log1p(x) − μ_ref) / σ_ref`, because the two cohorts
-use different p-tau217 assays. In ADNI the reference parameters are recomputed inside
-every cross-validation fold. Because the reference population is defined by amyloid
-status, `GRAD_reference_sensitivity.py` repeats the external validation under reference
-definitions that use no outcome information at all; full-pipeline AUC moves by at most
-0.012 (Supplementary Table S3).
-
-**Aβ42/40** enters the model as a raw log ratio rather than a Z-score. It is a ratio of
-two analytes from the same sample on the same platform, so platform scale factors cancel
-within it.
-
----
 
 ## License and citation
 
